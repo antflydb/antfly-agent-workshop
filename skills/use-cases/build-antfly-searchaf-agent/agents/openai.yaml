@@ -1,0 +1,4 @@
+interface:
+  display_name: "Build a SearchAF-ingested Antfly Agent"
+  short_description: "Ingest with SearchAF; retrieve through Antfly MCP"
+  default_prompt: "Use $build-antfly-searchaf-agent to set up the private file-agent workshop with SearchAF ingestion and native Antfly MCP retrieval."

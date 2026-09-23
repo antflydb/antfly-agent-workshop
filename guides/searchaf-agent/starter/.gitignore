@@ -1,0 +1,7 @@
+.env*
+!.env.example
+local/connection.json
+local/.venv/
+**/__pycache__/
+*.private.json
+local/bin/

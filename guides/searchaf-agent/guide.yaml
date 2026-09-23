@@ -1,0 +1,32 @@
+schema_version: 1
+id: searchaf-agent
+title: Choose an agent over your files
+subtitle: Ingest with SearchAF and power a private agent through native Antfly MCP.
+outcome: Retrieve selected local and optional Google Drive documents from the SearchAF-created Antfly database and produce cited answers, a meeting-preparation brief, or a project-handoff dossier.
+maturity: experimental
+audience:
+  - developers
+  - workshop facilitators
+skills:
+  required:
+    - build-antfly-searchaf-agent
+starters:
+  - guides/searchaf-agent/starter
+security:
+  credential_scope: Single-owner local snapshot retrieval through a scoped read-only adapter; server-only OpenAI key.
+  tool_policy: guides/searchaf-agent/AGENT-HANDOFF.md
+evaluations:
+  - guides/searchaf-agent/evaluations.json
+verification:
+  - Native MCP tools, table and index discovered independently of the model.
+  - Known content retrieved from approved roots.
+  - Real model answer contains verified citation IDs and supporting evidence.
+  - Build and scope/citation tests pass.
+  - Private hosted sign-in and answer path verified separately.
+compatibility:
+  operating_system: macOS; original prototype on Apple Silicon
+  runtime: Python 3.12, Node 22.13 or later, pinned tunnel-client 0.0.14
+  data: SearchAF-owned files and searchaf_cloud_state tables; document_vectors index
+  agent_handoff: Codex or Claude Code can read the bundled instructions; Sites publishing requires Sites tools/access
+provenance:
+  repository: antflydb/antfly-skills
