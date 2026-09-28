@@ -140,3 +140,15 @@ body{margin:0;background:var(--background);color:var(--foreground)}
 @media(max-width:1150px){.workspace-grid{grid-template-columns:190px minmax(330px,1fr)}.evidence-panel{grid-column:2;border-top:1px solid var(--border);border-left:0}.rail{grid-row:1/3;padding:30px 18px}.main-panel{padding:35px 28px}}@media(max-width:650px){.topbar{padding:0 20px;height:65px}.brand{gap:10px}.brand>span:last-child{display:none}.workspace-grid{display:block}.rail{border-right:0;border-bottom:1px solid var(--border);padding:16px 22px}.rail>.eyebrow,.rail>h2,.rail>p,.rail-note{display:none}.source-row{margin:0;border:0;padding:0}.connection{margin-top:9px}.main-panel{padding:30px 22px}.question-footer>span{max-width:100px}.evidence-panel{padding:24px}.answer-empty{padding:36px 12px}}
 
 .error-message{border:1px solid #dfb8a4;background:#fff3e9;color:#814327;padding:16px;border-radius:9px;margin-top:25px;font-size:13px}.searching{padding:38px 0;color:#667655;font-size:14px}.answer{padding:35px 0;font-size:14px;line-height:1.85}.answer>p{margin-bottom:18px;white-space:pre-wrap}.answer button{vertical-align:baseline;margin:0 3px;height:21px;min-width:22px;color:#416136}.source-list{margin-top:24px;display:grid;gap:14px}.source-card{border:1px solid #d9dfcd;background:#fafbf5;border-radius:9px;padding:15px;overflow-wrap:anywhere;scroll-margin:20px}.source-card.selected{border-color:#678a4c;box-shadow:0 0 0 2px #91af7133}.source-heading{display:flex;align-items:center;gap:8px}.source-heading>span{font-size:10px;background:#e4ecd9;padding:2px 6px;border-radius:4px}.source-card small{font-size:10px;color:#79836c}.source-card h3{font-size:12px;font-weight:600;margin:12px 0 8px}.source-card p{font-size:11px;line-height:1.7;white-space:pre-wrap;color:#65705b;max-height:270px;overflow:auto}
+
+/* Shared workshop destinations, with the current app's visual theme. */
+header .workshop-links{display:flex;align-items:center;gap:6px;flex-wrap:wrap;font-size:12px;margin-left:auto}
+header .workshop-links a,header .workshop-links span{display:inline-flex;align-items:center;gap:7px;padding:10px 11px;border-radius:7px;text-decoration:none;white-space:nowrap;line-height:1.4}
+header .workshop-links a{color:inherit;opacity:.8}
+header .workshop-links a:hover{opacity:1;background:color-mix(in srgb,currentColor 8%,transparent)}
+header .workshop-links [aria-current=page]{background:color-mix(in srgb,currentColor 12%,transparent);font-weight:600}
+header .workshop-links a:focus-visible{outline:2px solid currentColor;outline-offset:3px}
+header.topbar,header.masthead,.desk>header{height:auto;min-height:82px;gap:18px;flex-wrap:wrap;padding-top:14px;padding-bottom:14px}
+.support-scope-label{display:block;font-size:11px;color:#746c80;text-align:right;margin-top:4px}
+@media(max-width:1150px){header .workshop-links{order:3;flex-basis:100%;margin-left:0;justify-content:center}header.topbar,header.masthead,.desk>header{gap:10px}}
+@media(max-width:480px){header .workshop-links{gap:3px;font-size:11px}header .workshop-links a,header .workshop-links span{padding:9px 6px}}

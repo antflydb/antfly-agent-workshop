@@ -40,7 +40,7 @@ def main():
     payload=files()
     payload['START-HERE.md']=b'# Antfly file-agent workshop\n\nRead guides/searchaf-agent/AGENT-HANDOFF.md. Runnable code, sample documents and optional Skill are included. No personal credentials or deployment are included.\n'
     hashes={name:hashlib.sha256(data).hexdigest() for name,data in payload.items()}
-    payload['MANIFEST.json']=(json.dumps({'version':'0.3.1','sha256':hashes},indent=2)+'\n').encode()
+    payload['MANIFEST.json']=(json.dumps({'version':'0.4.0','sha256':hashes},indent=2)+'\n').encode()
     for name,data in payload.items():
         if name.endswith('.md'):
             for link in re.findall(r'\]\(([^)#]+)(?:#[^)]*)?\)',data.decode()):

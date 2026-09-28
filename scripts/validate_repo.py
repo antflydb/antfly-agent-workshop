@@ -48,11 +48,11 @@ with tempfile.TemporaryDirectory(prefix='antfly-workshop-verify-') as tmp:
         manifest = json.loads(z.read('antfly-searchaf-agent/MANIFEST.json'))
         for name, digest in manifest['sha256'].items():
             assert hashlib.sha256(z.read('antfly-searchaf-agent/' + name)).hexdigest() == digest
-    for agent in ['knowledge', 'meeting-prep', 'project-handoff']:
+    for agent in ['knowledge', 'meeting-prep', 'project-handoff', 'support']:
         destination = tmp / agent
         command = ['python3', str(package.with_name('bootstrap.py')), '--agent', agent, '--destination', str(destination)]
         subprocess.run(command, check=True, capture_output=True)
         assert (destination / 'site/package-lock.json').exists()
         assert json.loads((destination / 'site/.openai/hosting.json').read_text())['project_id'] is None
         assert subprocess.run(command, capture_output=True).returncode != 0
-print(f'Validated {count} text files, Markdown links, archive hashes, all three bootstrap paths and overwrite refusal.')
+print(f'Validated {count} text files, Markdown links, archive hashes, all four bootstrap paths and overwrite refusal.')

@@ -2,7 +2,7 @@ schema_version: 1
 id: searchaf-agent
 title: Choose an agent over your files
 subtitle: Ingest with SearchAF and power a private agent through native Antfly MCP.
-outcome: Retrieve selected local and optional Google Drive documents from the SearchAF-created Antfly database and produce cited answers, a meeting-preparation brief, or a project-handoff dossier.
+outcome: Retrieve selected local and optional Google Drive documents from the SearchAF-created Antfly database and produce cited answers, a meeting-preparation brief, a project-handoff dossier, or grounded support guidance.
 maturity: experimental
 audience:
   - developers

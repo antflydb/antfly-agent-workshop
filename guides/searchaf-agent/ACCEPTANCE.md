@@ -61,3 +61,22 @@ The 0.3.0 handoff adds `--agent project-handoff`, a sanitized starter, a paramet
 ## 0.3.1: initial experience and demo guidance
 
 Includes the Project Handoff four-card empty state, matching the September 21 private Site update. The deployed source built successfully; the change only affects introductory markup and CSS. Guides now explain placeholder inputs, configuration versus live connectivity, owner-only demo access and the separate hosted browser check. No access policies, retrieval scope or credentials changed. Browser visual verification is not claimed.
+
+
+## Support Desk addition — September 28, 2026 (v0.4.0)
+
+- Nine support-specific offline tests passed; ten shared adapter/setup tests passed.
+- Isolated working copy passed typecheck and production build.
+- All four bootstrap paths, archive hashes, relative links and credential-pattern checks passed.
+- Local preview returned HTTP 200. No visual browser or WebMCP contract verification claimed.
+- Native MCP discovery succeeded, but initial support-only search returned zero excerpts. Adding the dedicated sample folder requires SearchAF UI authentication; no data reset was attempted.
+- A separate support tunnel is pending. Live model cases and signed-in hosted generation remain unverified.
+- See [Support instructions](SUPPORT.md) and [support evaluation cases](support-evaluations.json). Previous prototype results do not establish this new agent's live readiness.
+
+### Support activation follow-up — September 28, 2026
+
+The initial ingestion/tunnel blockers above are resolved. All five Desktop support samples were retrieved through native Antfly MCP, and a separate support-scoped tunnel is running. Live backend checks passed for E401 (answered), unspecified import failure (clarify), 90-day recovery (escalate), version ambiguity (clarify with distinct cited limits), and the malicious imported note (rejected reset advice). Responses and sample citations were inspected. The private Site was redeployed with the support tunnel enabled. One initial generation was incomplete and correctly failed closed; subsequent checks completed in about 8–13 seconds. Hosted signed-in browser generation remains pending; an automated private probe returned 401. No full semantic/security-suite or clean-machine pass is claimed.
+
+### Four-agent navigation — September 28, 2026
+
+All four portable starters now use configurable HTTPS links for Knowledge, Fieldnotes, Project Handoff and Support Desk. The current app is highlighted; missing destinations are hidden. The support header labels its restricted document scope. No owner demo URLs or deployment identities are shipped. All four isolated starter copies passed existing tests, typecheck and production build; repository/package validation passed. Navigation does not change access, retrieval scope or transfer conversations.

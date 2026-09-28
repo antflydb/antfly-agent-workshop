@@ -1,4 +1,5 @@
 'use client';
+import WorkshopNav, {type AgentUrls} from './workshop-nav';
 import { useCallback, useEffect, useState } from 'react';
 import { ArrowUpRight, ArrowRight, BookOpen, Check, ChevronDown, Clock3, Copy, FileText, Layers3, LockKeyhole, Printer, Sparkles } from 'lucide-react';
 import { Button } from '@/components/ui/button';
@@ -12,7 +13,7 @@ const examples = [
   {label:'Rollback preparation',topic:'Project Atlas rollback rehearsal',participants:'Product and engineering',goal:'Clarify rollback ownership, triggers, and preparation.',duration:15},
 ];
 
-export default function MeetingWorkspace({knowledgeUrl}: {knowledgeUrl?:string}) {
+export default function MeetingWorkspace({agentUrls}:{agentUrls?:AgentUrls}) {
  const [input,setInput]=useState<MeetingInput>(initial);
  const [result,setResult]=useState<BriefResult|null>(null);
  const [submitted,setSubmitted]=useState<MeetingInput|null>(null);
@@ -41,7 +42,7 @@ export default function MeetingWorkspace({knowledgeUrl}: {knowledgeUrl?:string})
  const copy=async()=>{if(!result)return;const b=result.brief;const evidence=(p:EvidencePoint)=>`${p.text} ${p.source_ids.map(id=>'['+((result.sources.findIndex(s=>s.id===id))+1)+']').join(' ')}`;const text=[b.title,'CONTEXT',...b.context.map(evidence),'PRIOR DECISIONS & PROPOSALS',...b.decisions.map(p=>`${p.status}: ${evidence(p)}`),'TENSIONS',...b.tensions.map(evidence),'GAPS',...b.gaps,'SUGGESTED AGENDA',...b.agenda.map(a=>`${a.minutes} min — ${a.topic}: ${a.purpose}`),'SUGGESTED QUESTIONS',...b.questions,'SOURCE EXCERPTS',...result.sources.map((s,i)=>`[${i+1}] ${s.title} (${s.source})\n${s.excerpt}`)].join('\n\n');try{await navigator.clipboard.writeText(text);setCopied(true);}catch{setError('Clipboard access is unavailable. Use Print / save PDF instead.');}};
  const brief=result?.brief;
  return <div className="brief-app">
-  <header className="masthead"><a href="/" className="wordmark"><Layers3 size={21}/><strong>Antfly</strong><span>FIELDNOTES</span></a><nav aria-label="Workshop agents">{knowledgeUrl ? <a href={knowledgeUrl}><BookOpen size={15}/> Knowledge agent <ArrowUpRight size={13}/></a> : <span>Knowledge agent · separate workshop path</span>}<span className="current-agent"><Sparkles size={14}/> Meeting-prep agent</span></nav><span className="private-badge"><LockKeyhole size={12}/> Private workspace</span></header>
+  <header className="masthead"><a href="/" className="wordmark"><Layers3 size={21}/><strong>Antfly</strong><span>FIELDNOTES</span></a><WorkshopNav current="fieldnotes" urls={agentUrls}/><span className="private-badge"><LockKeyhole size={12}/> Private workspace</span></header>
   <div className="intro-strip"><span className="edition">AGENT 02 / MEETING PREPARATION</span><span>Same knowledge. A different kind of preparation.</span></div>
   <main className="desk">
    <aside className="setup-panel"><div className="setup-title"><span className="small-label">THE MEETING</span><h1>Walk in<br/><em>with context.</em></h1><p>Turn what your workspace knows into a brief worth bringing to the room.</p></div>

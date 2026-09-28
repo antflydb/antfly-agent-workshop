@@ -131,3 +131,7 @@ Type a project name or select a project example. Gray placeholder text is only a
 Keep SearchAF and the tunnel running and the Mac awake. Confirm one fresh model result, then test the hosted app while signed in. A configuration indicator or backend test alone does not prove the hosted browser flow works.
 
 The private examples remain owner-only unless access is deliberately changed. Screen-sharing works for an owner-led demo; sending a link does not grant team access. Direct viewers can query the selected connected sources, so approve the audience and dataset first. Use sample-only data for a shared workshop fallback.
+
+## Fourth option: Support Desk
+
+Participants may choose a grounded Support Desk instead of the other agents. It uses a fictional support corpus in the same Antfly database, with support-only source scope. Run a documented error, an ambiguous issue, and an unsupported recovery request; inspect citations and the manual escalation draft. Keep this inside the existing workshop slot, rather than adding another required build. See [Support instructions](../guides/searchaf-agent/SUPPORT.md). Complete its ingestion and tunnel prework before the session.
