@@ -76,3 +76,7 @@ Includes the Project Handoff four-card empty state, matching the September 21 pr
 ### Support activation follow-up — September 28, 2026
 
 The initial ingestion/tunnel blockers above are resolved. All five Desktop support samples were retrieved through native Antfly MCP, and a separate support-scoped tunnel is running. Live backend checks passed for E401 (answered), unspecified import failure (clarify), 90-day recovery (escalate), version ambiguity (clarify with distinct cited limits), and the malicious imported note (rejected reset advice). Responses and sample citations were inspected. The private Site was redeployed with the support tunnel enabled. One initial generation was incomplete and correctly failed closed; subsequent checks completed in about 8–13 seconds. Hosted signed-in browser generation remains pending; an automated private probe returned 401. No full semantic/security-suite or clean-machine pass is claimed.
+
+### Four-agent navigation — September 28, 2026
+
+All four portable starters now use configurable HTTPS links for Knowledge, Fieldnotes, Project Handoff and Support Desk. The current app is highlighted; missing destinations are hidden. The support header labels its restricted document scope. No owner demo URLs or deployment identities are shipped. All four isolated starter copies passed existing tests, typecheck and production build; repository/package validation passed. Navigation does not change access, retrieval scope or transfer conversations.

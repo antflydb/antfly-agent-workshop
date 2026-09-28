@@ -43,7 +43,7 @@ export default defineConfig(async ({ command }) => {
   const localValues = command === 'serve' && existsSync(localEnvPath)
     ? parseEnv(readFileSync(localEnvPath, 'utf8')) : {};
   const localVars = Object.fromEntries(
-    ['OPENAI_API_KEY', 'ANTFLY_TUNNEL_ID', 'OPENAI_MODEL', 'SITE_URL', 'KNOWLEDGE_AGENT_URL', 'MEETING_AGENT_URL']
+    ['OPENAI_API_KEY', 'ANTFLY_TUNNEL_ID', 'OPENAI_MODEL', 'SITE_URL', 'KNOWLEDGE_AGENT_URL', 'MEETING_AGENT_URL', 'HANDOFF_AGENT_URL', 'SUPPORT_AGENT_URL']
       .filter(key => Boolean(localValues[key]))
       .map(key => [key, localValues[key]!]),
   );
