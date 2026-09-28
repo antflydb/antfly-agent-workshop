@@ -1,8 +1,8 @@
 # Antfly Agent Workshop
 
-**One index, three agents.** Use SearchAF to ingest selected local and Google Drive files, retrieve through native Antfly MCP, and build a private OpenAI-powered Sites app.
+**One index, four agent patterns.** Use SearchAF to ingest selected local and Google Drive files, retrieve through native Antfly MCP, and build a private OpenAI-powered Sites app.
 
-Internal Antfly workshop and review repository · experimental · source bundle v0.3.1.
+Internal Antfly workshop and review repository · experimental · source bundle v0.4.0.
 
 ## Start here
 
@@ -21,8 +21,9 @@ Internal Antfly workshop and review repository · experimental · source bundle 
 | Knowledge | Ask questions and inspect cited answers | `guides/searchaf-agent/starter/site` |
 | Meeting prep / Fieldnotes | Prepare context, questions and a suggested agenda | `guides/searchaf-agent/starter/meeting-site` |
 | Project Handoff | Transfer background, decisions, documented work and a reading list | `guides/searchaf-agent/starter/handoff-site` |
+| Support Desk | Documented troubleshooting, clarification and escalation drafts | `guides/searchaf-agent/starter/support-site` |
 
-All three reuse the same index and scoped tunnel. The fictional Atlas sample corpus is included; personal source documents, credentials, deployment identities and running environments are not.
+The first three reuse the same index and scoped tunnel. Support Desk uses the same database with an explicitly selected support-only folder; use a separate tunnel if the other agents expose broader personal files. The fictional Atlas sample corpus is included; personal source documents, credentials, deployment identities and running environments are not.
 
 ```text
 Selected files → SearchAF → local Antfly database
@@ -36,7 +37,7 @@ SearchAF MCP and its Manual token are not used. Selected excerpts go to OpenAI; 
 
 Clone the repository, then give your coding agent this instruction:
 
-> Read `guides/searchaf-agent/AGENT-HANDOFF.md`. Help me choose Knowledge, Meeting prep, or Project Handoff and bootstrap it into a new working directory. Start with the included sample corpus unless I select another folder. Preserve existing data and connections, use native Antfly MCP for retrieval, and report each verification stage separately.
+> Read `guides/searchaf-agent/AGENT-HANDOFF.md`. Help me choose Knowledge, Meeting prep, Project Handoff, or Support Desk and bootstrap it into a new working directory. Start with the included sample corpus unless I select another folder. Preserve existing data and connections, use native Antfly MCP for retrieval, and report each verification stage separately.
 
 Example bootstrap (does not ingest or deploy):
 
@@ -59,13 +60,17 @@ Prototype Sites remain separately controlled and owner-private. Repository acces
 - `guides/searchaf-agent/`: runnable starters, Atlas samples, evaluations, handoff and package tooling.
 - `skills/use-cases/build-antfly-searchaf-agent/`: optional reusable Skill; keep it with the guide.
 - `docs/`: facilitator kit, planning, troubleshooting and historical engineering findings.
-- `scripts/validate_repo.py`: link, artifact and credential-pattern checks plus three-path bootstrap verification.
+- `scripts/validate_repo.py`: link, artifact and credential-pattern checks plus four-path bootstrap verification.
 
 This standalone snapshot comes from the Antfly Skills workshop guide. It does not include unrelated skills, original personal app repositories, stale ZIPs or generated dependencies. Reconcile future fixes with the upstream guide deliberately.
 
 ```sh
 python3 scripts/validate_repo.py
-python3 guides/searchaf-agent/scripts/package.py --output /tmp/antfly-workshop-v0.3.1.zip
+python3 guides/searchaf-agent/scripts/package.py --output /tmp/antfly-workshop-v0.4.0.zip
 ```
 
-The ZIP contains the participant guide/Skill, three starters, agenda and facilitator notes. Clone this repository for the full internal planning and engineering materials.
+The ZIP contains the participant guide/Skill, four starters, agenda and facilitator notes. Clone this repository for the full internal planning and engineering materials.
+
+## Support Desk addition
+
+Read the [build plan](docs/SUPPORT-AGENT-PLAN.md), [participant instructions](guides/searchaf-agent/SUPPORT.md), and [current verification status](docs/SUPPORT-STATUS.md). The Lumen Sync support corpus is fictional and included.

@@ -1,12 +1,12 @@
 # Agent handoff: SearchAF ingestion → Antfly MCP → agent
 
-Package version: **0.3.1 experimental**, September 21, 2026.
+Package version: **0.4.0 experimental**, September 28, 2026.
 
 Read this file before executing. It works as a task document for Codex or Claude Code; automatic Skill installation is optional. Start in the package/repository root and locate this file at `guides/searchaf-agent/AGENT-HANDOFF.md`. All source is included under `starter/`; no earlier conversation, personal account or existing hosted app is required.
 
 ## Outcome and boundaries
 
-Choose a **knowledge agent** (cited Q&A), **meeting-prep agent** (context, decisions, suggested agenda and questions), or **project-handoff agent** (background, decisions, documented work, gaps and reading list). All three use the same ingestion, database and Antfly MCP connection. Ask which the user wants if not already selected.
+Choose a **knowledge agent** (cited Q&A), **meeting-prep agent** (context, decisions, suggested agenda and questions), **project-handoff agent** (background, decisions, documented work, gaps and reading list), or **support agent** (documented steps, clarification, escalation draft). The first three use the same ingestion, database and scoped Antfly MCP connection. Support Desk uses a deliberately approved support corpus, with a separate scoped tunnel when the existing connection includes broader personal files. Ask which the user wants if not already selected.
 
 Create a **private, single-owner** agent over explicitly selected files. SearchAF performs ingestion into its existing local Antfly database. The adapter uses Antfly **native Streamable HTTP MCP** to retrieve from that database. OpenAI produces cited answers; the included Sites app is the frontend.
 
@@ -18,7 +18,7 @@ Work in a **new destination**. Do not edit the shipped starter in place. This pa
 
 | Input | How to obtain it |
 | --- | --- |
-| Agent choice | `knowledge`, `meeting-prep`, or `project-handoff`; user selects |
+| Agent choice | `knowledge`, `meeting-prep`, `project-handoff`, or `support`; user selects |
 | New workspace directory | User chooses, or propose a new `~/antfly-files-workshop` |
 | Approved folder roots | Explicit user selection; begin with bundled `sample-data` |
 | SearchAF state directory | Default `~/.searchaf`; discover an override if needed |
@@ -45,7 +45,9 @@ npm ci
 cd ..
 ```
 
-For meeting preparation, use `--agent meeting-prep`; for project handoff, use `--agent project-handoff`. The chosen app always appears at `site/`. To build multiple agents, use separate destination directories and reuse the existing approved index/tunnel; do not reingest or restart the first agent’s working connection. Only one local adapter/tunnel runtime is needed.
+For Support Desk, use `--agent support` and follow [SUPPORT.md](SUPPORT.md) for the support-only corpus, separate tunnel where needed, and live smoke commands. Do not use the Atlas question for this corpus.
+
+For meeting preparation, use `--agent meeting-prep`; for project handoff, use `--agent project-handoff`. The chosen app always appears at `site/`. To build multiple agents, use separate destination directories and reuse the existing approved index/tunnel; do not reingest or restart the first agent’s working connection. Only one local adapter/tunnel runtime is needed when all selected agents have identical approved roots. Support needs a separate runtime/tunnel when its approved roots differ.
 
 If Python 3.12 is already on PATH, `python3.12 -m venv local/.venv` and `local/.venv/bin/python -m pip install -r local/requirements.lock` are equivalent. Bootstrap refuses an existing destination. No database changes occur.
 
@@ -189,4 +191,8 @@ This is **single-owner indexed-snapshot access**, not live Google ACL enforcemen
 
 ## Facilitated workshop
 
-Use [the agenda](WORKSHOP-AGENDA.md) and [facilitator notes](FACILITATOR-NOTES.md) shipped with this bundle. Finish accounts, ingestion, native retrieval and the first model call before the timed session. Participants build one agent; the other two are extensions over the same index.
+Use [the agenda](WORKSHOP-AGENDA.md) and [facilitator notes](FACILITATOR-NOTES.md) shipped with this bundle. Finish accounts, ingestion, native retrieval and the first model call before the timed session. Participants build one agent; the other options are extensions over the same index.
+
+## Support-specific acceptance
+
+Run [support evaluations](support-evaluations.json) in addition to the shared scope/error cases. The support app is draft assistance: no tickets, writes, or confirmation of resolution. Citation IDs are validated mechanically; a human still checks whether each passage supports its claim.

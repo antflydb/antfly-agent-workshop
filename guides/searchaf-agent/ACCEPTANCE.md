@@ -61,3 +61,14 @@ The 0.3.0 handoff adds `--agent project-handoff`, a sanitized starter, a paramet
 ## 0.3.1: initial experience and demo guidance
 
 Includes the Project Handoff four-card empty state, matching the September 21 private Site update. The deployed source built successfully; the change only affects introductory markup and CSS. Guides now explain placeholder inputs, configuration versus live connectivity, owner-only demo access and the separate hosted browser check. No access policies, retrieval scope or credentials changed. Browser visual verification is not claimed.
+
+
+## Support Desk addition — September 28, 2026 (v0.4.0)
+
+- Nine support-specific offline tests passed; ten shared adapter/setup tests passed.
+- Isolated working copy passed typecheck and production build.
+- All four bootstrap paths, archive hashes, relative links and credential-pattern checks passed.
+- Local preview returned HTTP 200. No visual browser or WebMCP contract verification claimed.
+- Native MCP discovery succeeded, but initial support-only search returned zero excerpts. Adding the dedicated sample folder requires SearchAF UI authentication; no data reset was attempted.
+- A separate support tunnel is pending. Live model cases and signed-in hosted generation remain unverified.
+- See [Support instructions](SUPPORT.md) and [support evaluation cases](support-evaluations.json). Previous prototype results do not establish this new agent's live readiness.

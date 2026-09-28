@@ -1,8 +1,8 @@
-# Facilitator notes: One index, three agents
+# Facilitator notes: One index, four agent patterns
 
 ## The message to repeat
 
-“SearchAF brings your files into Antfly. Antfly MCP gives the agent access to selected evidence. The same index can power a knowledge answer, a meeting brief, or a project handoff.”
+“SearchAF brings your files into Antfly. Antfly MCP gives the agent access to selected evidence. The same index can power a knowledge answer, a meeting brief, a project handoff, or support guidance.”
 
 The workshop is a guided build from a working starter. It is not a promise to complete new accounts, Drive authentication, ingestion, tunnel setup and a custom app from scratch in 60 minutes.
 
@@ -12,7 +12,7 @@ Use one lead facilitator and at least one technical helper for the initial small
 
 | When | Owner | Deliverable / go-no-go check |
 | --- | --- | --- |
-| T−5 business days | Workshop lead | Audience, Mac requirements, capacity, format, prework email and three agent choices |
+| T−5 business days | Workshop lead | Audience, Mac requirements, capacity, format, prework email and four agent choices |
 | T−3 days | Technical lead | Freeze bundle version; rehearse on a second Mac/account; approve the sample corpus and evaluation key |
 | T−2 days | Facilitator + helper | Run the agenda end to end; record setup time, generation latency and API usage; prepare sample-only outputs as backup |
 | T−1 day | Helper | Participant readiness list; each has known-passage retrieval and one model result, or an assigned fallback |
@@ -36,7 +36,7 @@ Use one lead facilitator and at least one technical helper for the initial small
 
 ### 00–05: show outcomes before architecture
 
-Show the same Atlas corpus in all three experiences. Say: “Choose the job you want the agent to do. We set up the data once.” Have participants select one path; building all three is an extension.
+Show Atlas in the first three experiences and the approved Lumen support corpus in Support Desk. Say: “Choose the job you want the agent to do. We set up the data once.” Have participants select one path; building multiple agents is an extension.
 
 ### 05–10: explain just enough architecture
 
@@ -46,7 +46,7 @@ Say: “The index stays local. Selected passages are sent to OpenAI. SearchAF's 
 
 ### 10–18: readiness checkpoint
 
-Ask attendees to retrieve a known Atlas passage and open their prepared app. A helper gets at most three minutes per blocking problem during the main session. Move the participant to the sample-only fallback or paired exercise, then troubleshoot separately. Do not let one account or install problem consume the room's time.
+Ask attendees to retrieve a known Atlas or Lumen passage and open their prepared app. A helper gets at most three minutes per blocking problem during the main session. Move the participant to the sample-only fallback or paired exercise, then troubleshoot separately. Do not let one account or install problem consume the room's time.
 
 ### 18–30: guide each path
 
@@ -55,6 +55,8 @@ Ask attendees to retrieve a known Atlas passage and open their prepared app. A h
 **Meeting prep:** use a 30-minute readiness meeting. Check context and decision/proposal labels before reviewing the agenda. Suggested agenda items are not prior commitments; participants entered in the form are planning context, not proof of attendance.
 
 **Project Handoff:** prepare for product and engineering. Check documented work and owner citations, then gaps and reading list. A next step in a document is not proof it remains outstanding today. Unknown owners stay unknown. A recipient field does not share the dossier, grant access or assign a task. A timeline may correctly be empty when dates are not supported.
+
+**Support Desk:** run E401 with version 2.4, then an ambiguous import failure, then ninety-day recovery. Check applicable version and cited steps. Clarification should not guess a fix; escalation should not promise recovery, permanent loss, or a sent ticket. Copying a draft is a manual export. Keep support scope separate from broader personal data.
 
 ### 30–40: make evidence inspection concrete
 
@@ -90,7 +92,7 @@ Stop only the facilitator's dedicated sample tunnel. Show a visible retrieval er
 
 Use approved documents only. Explain that generated outputs and manual exports may include private excerpts. Keep participant data, API keys and screenshots out of shared issue reports. API calls incur usage; measure a pilot before setting a workshop budget. Do not promise a fixed price or latency.
 
-From a v0.3.0 working copy, stop its runtime with:
+From a v0.4.0 working copy, stop its runtime with:
 
 ```sh
 local/.venv/bin/python local/tunnel.py stop
@@ -107,3 +109,7 @@ After the pilot, update the timed agenda using measured setup and support load. 
 ## Project Handoff opening screen (0.3.1)
 
 The four preview cards describe the dossier, not four buttons to click. Select a project example or type a project name into the left form; gray placeholder text does not count as input. Then use Build project dossier. The connected/configured indicator is not proof of a live search: confirm a real generated result before presenting.
+
+## Fourth option: Support Desk
+
+Participants may choose a grounded Support Desk instead of the other agents. It uses a fictional support corpus in the same Antfly database, with support-only source scope. Run a documented error, an ambiguous issue, and an unsupported recovery request; inspect citations and the manual escalation draft. Keep this inside the existing workshop slot, rather than adding another required build. See [Support instructions](../guides/searchaf-agent/SUPPORT.md). Complete its ingestion and tunnel prework before the session.

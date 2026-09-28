@@ -20,13 +20,13 @@ You do not need SearchAF MCP, a Manual token, a second database or a data reimpo
 | Project-handoff agent | Project, recipient and focus | A cited dossier, documented work, gaps and reading list |
 | Meeting-prep agent | Topic, participants, goal and duration | A brief, prior decisions/proposals, evidence gaps, suggested agenda and questions |
 
-All three use the same SearchAF ingestion and native Antfly MCP setup. Choose at bootstrap with `--agent knowledge`, `--agent meeting-prep`, or `--agent project-handoff`; no second database or reimport is needed.
+All four use SearchAF ingestion and native Antfly MCP; Support Desk has its own approved support corpus and scope. Choose at bootstrap with `--agent knowledge`, `--agent meeting-prep`, `--agent project-handoff`, or `--agent support`; no second database or reimport is needed.
 
 ## Hand this to Codex or Claude
 
 Share the complete versioned bundle, not just this page, and use:
 
-> Read `guides/searchaf-agent/AGENT-HANDOFF.md` and execute it in a new workspace. Use SearchAF for ingestion and native Antfly MCP for retrieval. Ask which agent I want to build: knowledge, meeting-prep, or project-handoff. Start with the sample corpus unless I select another folder. Ask only for missing source/account authorization or secure credential setup. Preserve my existing database and integrations. Verify each stage and report precisely what passed, what remains blocked, and whether the hosted browser test was completed.
+> Read `guides/searchaf-agent/AGENT-HANDOFF.md` and execute it in a new workspace. Use SearchAF for ingestion and native Antfly MCP for retrieval. Ask which agent I want to build: knowledge, meeting-prep, project-handoff, or support. Start with the sample corpus unless I select another folder. Ask only for missing source/account authorization or secure credential setup. Preserve my existing database and integrations. Verify each stage and report precisely what passed, what remains blocked, and whether the hosted browser test was completed.
 
 The optional Skill is at `skills/use-cases/build-antfly-searchaf-agent/SKILL.md`. Reading the handoff directly is enough; the package does not require harness-specific auto-installation.
 
@@ -37,7 +37,9 @@ The optional Skill is at `skills/use-cases/build-antfly-searchaf-agent/SKILL.md`
 - `starter/site/`: knowledge-agent Sites app
 - `starter/meeting-site/`: meeting-prep Sites app with a distinct briefing layout
 - `starter/handoff-site/`: project-handoff app with a dossier layout
-- All three apps include lockfiles, citation checks and a live smoke script
+- `starter/support-site/`: support conversation, cited steps and escalation drafts
+- `support-sample-data/`: five fictional Lumen Sync documents
+- All four apps include lockfiles, citation checks and a live smoke script
 - `sample-data/`: four fictional documents
 - [Evaluation cases](evaluations.json) and [acceptance record](ACCEPTANCE.md)
 - `scripts/bootstrap.py`: creates an isolated working copy
@@ -59,3 +61,7 @@ Keep SearchAF and the tunnel running and the Mac awake. Confirm one fresh model 
 The private examples remain owner-only unless access is deliberately changed. Screen-sharing works for an owner-led demo; sending a link does not grant team access. Direct viewers can query the selected connected sources, so approve the audience and dataset first. Use sample-only data for a shared workshop fallback.
 
 Workshop materials: [agenda](WORKSHOP-AGENDA.md) · [facilitator notes](FACILITATOR-NOTES.md).
+
+## Fourth option: Support Desk
+
+Participants may choose a grounded Support Desk instead of the other agents. It uses a fictional support corpus in the same Antfly database, with support-only source scope. Run a documented error, an ambiguous issue, and an unsupported recovery request; inspect citations and the manual escalation draft. Keep this inside the existing workshop slot, rather than adding another required build. See [Support instructions](SUPPORT.md). Complete its ingestion and tunnel prework before the session.

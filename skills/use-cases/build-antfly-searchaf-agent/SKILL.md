@@ -11,7 +11,7 @@ Use `guides/searchaf-agent/guide.md` for the human overview. The full starter is
 
 ## Required behavior
 
-- Ask whether to build the knowledge, meeting-prep, or project-handoff agent if the user has not selected. Bootstrap with the corresponding `--agent` value. All three share the same database/MCP setup; no duplicate ingestion is required.
+- Ask whether to build the knowledge, meeting-prep, project-handoff, or support agent if the user has not selected. Bootstrap with the corresponding `--agent` value. All four use the same database architecture. Support Desk requires an approved support corpus and its own scoped tunnel if other agents expose broader sources.
 
 - SearchAF ingests; its existing Antfly database stores/indexes; native Antfly MCP retrieves. Do not substitute the SearchAF MCP gateway, request its Manual token, or recreate the database.
 - Gather missing approved roots, account/tunnel, authorized credential location and deployment target. Preserve prior authorization and avoid printing secrets.
@@ -22,3 +22,7 @@ Use `guides/searchaf-agent/guide.md` for the human overview. The full starter is
 - Report measured checks and pending checks distinctly. A prior owner's successful prototype is not proof of a new participant's setup.
 
 No automatic harness installation is required: Codex or Claude can read the handoff directly. Preserve the relative bundle layout so every referenced asset remains available.
+
+## Fourth option: Support Desk
+
+Participants may choose a grounded Support Desk instead of the other agents. It uses a fictional support corpus in the same Antfly database, with support-only source scope. Run a documented error, an ambiguous issue, and an unsupported recovery request; inspect citations and the manual escalation draft. Keep this inside the existing workshop slot, rather than adding another required build. See [Support instructions](../../../guides/searchaf-agent/SUPPORT.md). Complete its ingestion and tunnel prework before the session.
