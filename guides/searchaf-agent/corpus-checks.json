@@ -1,0 +1,26 @@
+[
+  {
+    "file": "atlas-approved-plan.md",
+    "format": "Markdown",
+    "query": "Atlas approved pilot launch October",
+    "expect": ["October 15, 2026", "25 invited customers"]
+  },
+  {
+    "file": "atlas-support-guide.pdf",
+    "format": "PDF",
+    "query": "ATLAS-403 session expired",
+    "expect": ["sign out, then sign in", "Do not ask the customer to delete their local cache"]
+  },
+  {
+    "file": "atlas-sync-error.png",
+    "format": "Screenshot",
+    "query": "ATLAS-409 sync conflict",
+    "expect": ["Review the change history before retrying sync"]
+  },
+  {
+    "file": "atlas-rollback-checklist.png",
+    "format": "Scanned checklist",
+    "query": "RBR-17 rollback rehearsal",
+    "expect": ["RBR-17", "Attach the incident log", "Completion status: not recorded"]
+  }
+]

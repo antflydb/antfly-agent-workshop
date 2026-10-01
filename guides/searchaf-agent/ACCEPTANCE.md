@@ -1,6 +1,6 @@
 # Acceptance record
 
-Package 0.3.1 · September 21, 2026 · experimental
+Package 0.5.0 · September 30, 2026 · experimental
 
 ## Portable package verification
 
@@ -24,7 +24,7 @@ The September 20 prototype retrieved Desktop and Google Docs through native Antf
 - SearchAF installation and fresh sample-corpus ingestion on a second Mac.
 - New participant Platform account, billing, tunnel permissions and model access.
 - All sample evaluation questions reviewed for semantic accuracy and injection resistance.
-- New Sites deployment, owner-only policy, unauthenticated denial and signed-in answer.
+- New Sites deployment, owner and workspace-admin policy, unauthenticated denial and signed-in answer.
 - Stop/restart recovery and optional Drive authorization for the participant.
 - Intel Mac runtime test (archive checksum is included, but runtime not tested here).
 
@@ -61,3 +61,47 @@ The 0.3.0 handoff adds `--agent project-handoff`, a sanitized starter, a paramet
 ## 0.3.1: initial experience and demo guidance
 
 Includes the Project Handoff four-card empty state, matching the September 21 private Site update. The deployed source built successfully; the change only affects introductory markup and CSS. Guides now explain placeholder inputs, configuration versus live connectivity, owner-only demo access and the separate hosted browser check. No access policies, retrieval scope or credentials changed. Browser visual verification is not claimed.
+
+
+## 0.3.2: mixed-media support packet
+
+The packet adds a selectable-text support PDF, a synthetic error screenshot, and a synthetic scanned rollback checklist alongside the original Markdown files. The manifest stays outside the indexed folder. The source-specific checker requires the expected passage from each named file; another format cannot satisfy the check.
+
+September 30 verification used an isolated SearchAF state directory containing only this packet, local installed models, and Antfly 0.2.1 (Zig runtime). The unchanged native-MCP gateway returned the expected passages from all four formats, with no oversized-document skips. The PDF used extracted row text; images supplied OCR and caption text. This proves this corpus's ingestion-to-gateway path; it does not establish Office-artifact retrieval or model-answer accuracy.
+
+Twelve adapter/setup/checker tests passed under Python 3.13.7. Repository validation checked text and Markdown links, archive hashes, all three bootstrap paths, inclusion of the media and manifest, and overwrite refusal. The app source and dependency lockfiles are unchanged. No OpenAI model request, new tunnel, or Sites deployment was performed for this revision. Participant semantic evaluations, hosted sign-in and recovery still require rehearsal.
+
+
+## 0.4.0: Cloud promotion workshop flow (documentation only)
+
+The main teaching path is local corpus verification, selected full-body publication to Antfly Cloud, hosted bounded retrieval and private deployment, then fresh hosted requests with the local runtime stopped. LOCAL-TUNNEL.md preserves the existing runnable reference path. CLOUD-PROMOTION.md records the publisher/app build contract and readiness requirements.
+
+The Cloud publisher, Cloud-capable app and second-device rehearsal are **not implemented or run by this documentation revision**. Earlier local ingestion, model calls and hosted prototypes do not satisfy these new gates. No Cloud resource was provisioned, content uploaded, key created or Site deployed. Documentation/package validation results must be recorded separately from those execution stages.
+
+| Cloud gate | Status | Evidence required |
+| --- | --- | --- |
+| Publisher and server-side retrieval implementation | Not run | Frozen working code, scope/error tests and build |
+| Publication/readback and retry | Not run | Seven complete bodies, hashes, version and idempotence |
+| Cloud passage parity | Not run | Same four named-file checks through Cloud retrieval |
+| Cited model answers | Not run | Factual/media/unknown-budget review |
+| Private hosted sign-in and denial | Not run | Actual browser request and unauthenticated denial |
+| Local runtime stopped | Not run | Fresh second-device answers, no local fallback |
+| Cloud unavailability | Not run | Visible error in test environment |
+| Ongoing update/removal and production controls | Not run | Assigned owner/cadence and operational verification |
+
+Documentation verification: 12 learning-content tests, website typecheck and learning validation passed; all 37 slides were checked for clipping, with the new diagrams inspected in light and dark themes. Package validation checked 125 text files, Markdown links, archive hashes, all three bootstrap paths and overwrite refusal. These are documentation/package checks, not Cloud execution passes.
+
+
+## 0.5.0: fresh pipeline and supplied Cloud publisher
+
+September 30, 2026. Installed SearchAF 0.1.31, commit 5f18930bf86f62d6b70c915bbd92a9102c095a68, with bundled Antfly 0.2.4 was onboarded using its actual API into an empty isolated state directory. No prior database/config was copied. The synthetic seven-source packet was the only selected folder; profiles were PDFs/Images/Notes and intelligence was semantic. Required models transitioned from pending to ready before CommitOnboarding.
+
+Verified per-source outputs: seven queryable document vectors; two PNG pipelines containing actual OCR, captions/provenance, visual labels and queryable 512-dimensional image vectors; seven graph records matching the indexed source hash; 21 extracted entities observed. The original four known-source passage checks passed. The supplied export command requires the stronger gate and exact bundled source hashes, exporting seven complete bodies (3,612 characters) under corpus version atlas-3066614e6e8512be.
+
+The supplied publisher was run twice against the approved dedicated Cloud table on an existing v0.2.5 instance. Both REST runs passed seven complete row readbacks, exact count/version, all four hybrid passage checks, REST write denial and REST out-of-table denial. The Cloud document index was rebuilt by the managed model rather than copying local vector bytes. Local package tests: 22 passing; package/link/hash/bootstrap validation: 131 text files passing.
+
+Important finding: native Cloud MCP accepted a real identical upsert using the Read-only key (inserted=1; body unchanged). REST denied writes with 403 and out-of-table requests with 403. Workshop Cloud instructions therefore use REST and require actual interface-level permission tests. Tool listings/key labels did not establish enforcement.
+
+Semantic chunking is disabled by the default CLIP-family text embedder. The verified contract is complete enrichment of this packet under the supported document-vector configuration, not all optional media formats/models or chunk-level retrieval. Cloud publication transfers selected full extracted bodies/provenance and recreates document retrieval; it does not migrate originals, image-vector bytes, graph tables or personal account bindings.
+
+Hosted-app adaptation, OpenAI answers/citations, second-device browser authentication and hosted-app independence remain separate unimplemented/unrun stages. Final supplied commands also passed under Python 3.12.11 with requirements.lock installed using uv. All seven Cloud rows had independently queryable full-text and vector coverage. The same final publisher ran twice with the same IDs/version. The verify-only command passed all Cloud checks after both owned local runtimes stopped. The temporary publisher was revoked and subsequent REST authentication returned 401. Existing unrelated keys, sources and instance capacity were preserved.

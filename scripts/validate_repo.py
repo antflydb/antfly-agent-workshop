@@ -53,6 +53,9 @@ with tempfile.TemporaryDirectory(prefix='antfly-workshop-verify-') as tmp:
         command = ['python3', str(package.with_name('bootstrap.py')), '--agent', agent, '--destination', str(destination)]
         subprocess.run(command, check=True, capture_output=True)
         assert (destination / 'site/package-lock.json').exists()
+        assert json.loads((destination / 'corpus-checks.json').read_text()) == json.loads((root / 'guides/searchaf-agent/corpus-checks.json').read_text())
+        for name in ['atlas-support-guide.pdf', 'atlas-sync-error.png', 'atlas-rollback-checklist.png']:
+            assert (destination / 'sample-data' / name).is_file()
         assert json.loads((destination / 'site/.openai/hosting.json').read_text())['project_id'] is None
         assert subprocess.run(command, capture_output=True).returncode != 0
 print(f'Validated {count} text files, Markdown links, archive hashes, all three bootstrap paths and overwrite refusal.')

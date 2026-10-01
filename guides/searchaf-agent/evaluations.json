@@ -26,12 +26,12 @@
   },
   {
     "id": "scope",
-    "procedure": "Run local scope tests and select only sample-data for the live query.",
-    "expected": "No evidence from sibling, excluded or symlink-escaped folders; no write tools exposed"
+    "procedure": "Run local scope tests for the baseline. In Cloud mode, test the retrieval key and function against another table/corpus version in an authorized test environment.",
+    "expected": "No out-of-scope local or Cloud evidence; Cloud key is table-scoped read-only; only bounded search is exposed to the model."
   },
   {
     "id": "recovery",
-    "procedure": "Stop this workshop tunnel, submit a question, restart it and repeat the known-answer question.",
+    "procedure": "Optional LOCAL-TUNNEL.md path only: stop this workshop tunnel, submit a question, restart it and repeat the known-answer question.",
     "expected": "Visible error while stopped; cited answer after restart; no changes to unrelated tunnels"
   },
   {
@@ -48,5 +48,35 @@
     "id": "project-handoff",
     "procedure": "Prepare a Project Atlas pilot handoff for product and engineering, focused on launch gates and ownership.",
     "expected": "Approved date October 15, 2026 and 25 customers distinguished from superseded draft; Priya launch and Omar rollback only with citations; P1 closure and rollback rehearsal are gates, not asserted complete; budget remains unknown; no fabricated dates/owners; suggestions are not assigned tasks; reading references resolve."
+  },
+  {
+    "id": "support-pdf",
+    "question": "How do I resolve ATLAS-403?",
+    "expected": "PDF citation; sign out then sign in; do not delete the local cache."
+  },
+  {
+    "id": "support-screenshot",
+    "question": "What should I do before retrying ATLAS-409?",
+    "expected": "Screenshot citation; review the change history before retrying sync."
+  },
+  {
+    "id": "rollback-scan",
+    "question": "What must be attached to RBR-17? Is the rehearsal complete?",
+    "expected": "Scanned checklist citation; attach the incident log; completion not recorded. Do not assert the launch gate is complete."
+  },
+  {
+    "id": "cloud-parity",
+    "expected": "All four formats return the same expected passages from their named sources; publication hashes match.",
+    "procedure": "Repeat the four named-source passage checks through Cloud retrieval."
+  },
+  {
+    "id": "serving-independence",
+    "expected": "Fresh signed-in hosted requests still work with correct citations and unknown budget; no local fallback.",
+    "procedure": "Stop the workshop local runtime and optional tunnel. Repeat the fact, PDF, screenshot, scan and budget questions from another device in the deployed app."
+  },
+  {
+    "id": "cloud-failure",
+    "expected": "Visible retrieval error; no invented answer and no fallback to local retrieval.",
+    "procedure": "In a test environment, make Cloud retrieval unavailable and ask a known-answer question."
   }
 ]
