@@ -1,8 +1,8 @@
 # Antfly Agent Workshop
 
-**One index, three agents.** Use SearchAF to ingest selected local and Google Drive files, retrieve through native Antfly MCP, and build a private OpenAI-powered Sites app.
+**Prototype locally, deploy independently.** Extract selected files with SearchAF, publish a tested corpus to Antfly Cloud, and deploy a private support agent with hosted retrieval.
 
-Internal Antfly workshop and review repository · experimental · source bundle v0.3.1.
+Internal workshop repository · experimental · starter repository. The repository supplies verified local enrichment and Cloud publication commands in [Pipeline quickstart](guides/searchaf-agent/PIPELINE-QUICKSTART.md). The web app still implements the optional local-tunnel reference path. [Cloud promotion](guides/searchaf-agent/CLOUD-PROMOTION.md) defines the Cloud-capable app adaptation to build and rehearse before the hosted-app lab.
 
 ## Start here
 
@@ -22,41 +22,42 @@ Internal Antfly workshop and review repository · experimental · source bundle 
 | Meeting prep / Fieldnotes | Prepare context, questions and a suggested agenda | `guides/searchaf-agent/starter/meeting-site` |
 | Project Handoff | Transfer background, decisions, documented work and a reading list | `guides/searchaf-agent/starter/handoff-site` |
 
-All three reuse the same index and scoped tunnel. The fictional Atlas sample corpus is included; personal source documents, credentials, deployment identities and running environments are not.
+The main session builds one support agent. Meeting prep and project handoff can reuse the Cloud corpus after each app has Cloud retrieval support. The original three reference starters remain tunnel-based.
 
 ```text
-Selected files → SearchAF → local Antfly database
-                                      ↑
-Private Sites app → OpenAI → tunnel → scoped adapter → Antfly MCP
+Prototype: selected files → SearchAF → local Antfly → passage checks
+Promote:   selected full extracted bodies + retrieval configuration → Antfly Cloud
+Serve:     private app + hosted bounded retrieval → Antfly Cloud REST query API
+           model answers with citations; no laptop tunnel in the serving path
 ```
 
-SearchAF MCP and its Manual token are not used. Selected excerpts go to OpenAI; the index stays on the Mac. Keep SearchAF and the tunnel running and the Mac awake.
+SearchAF MCP and its Manual token are not used. Cloud publication sends selected document bodies; model answering sends retrieved excerpts. The final gate is a fresh hosted request from another device with the local runtime stopped.
 
 ## Build from this repository
 
 Clone the repository, then give your coding agent this instruction:
 
-> Read `guides/searchaf-agent/AGENT-HANDOFF.md`. Help me choose Knowledge, Meeting prep, or Project Handoff and bootstrap it into a new working directory. Start with the included sample corpus unless I select another folder. Preserve existing data and connections, use native Antfly MCP for retrieval, and report each verification stage separately.
+> Read `guides/searchaf-agent/AGENT-HANDOFF.md`. Follow CLOUD-PROMOTION.md and bootstrap the support agent into a new working directory. Start with the synthetic sample corpus. Run PIPELINE-QUICKSTART.md using the supplied publisher; build the Cloud-capable app before the hosted-app lab. Preserve existing data and connections, use native MCP locally and the enforced Cloud REST query API, and report each verification stage separately.
 
 Example bootstrap (does not ingest or deploy):
 
 ```sh
-python3 guides/searchaf-agent/scripts/bootstrap.py --agent project-handoff --destination "$HOME/antfly-workshop-handoff"
+python3 guides/searchaf-agent/scripts/bootstrap.py --agent knowledge --destination "$HOME/antfly-files-workshop"
 ```
 
-Supported pilot environment: macOS, SearchAF, Node 22.13+, Python 3.12 (or uv), and tmux. API billing, model access, secure MCP tunnel permissions and Sites tooling/access must be confirmed individually. See the handoff for exact setup steps and pinned dependencies.
+Supported pilot environment: macOS, SearchAF, Node 22.13+, Python 3.12 (or uv); tmux is only needed for the optional tunnel path. API billing/model access, approved Antfly Cloud target/budget, scoped credentials and Sites tooling/access must be confirmed individually. See the handoff for exact setup steps and pinned dependencies.
 
 ## Workshop format and readiness
 
-Plan 60 minutes with required prework; a 45-minute demo option is included. Each participant builds one agent. Google Drive and additional agents are optional extensions.
+Plan 60 minutes with required prework; a 45-minute demo option is included. Each participant builds one agent. Google Drive, additional agents and local-tunnel hosting are optional extensions. Cloud mode must be implemented and rehearsed before this live format.
 
-The original private prototypes passed live retrieval/generation checks, including desktop and Google Drive evidence. The portable starters have build and offline test evidence. **A second-person clean-machine/account rehearsal, full semantic evaluations and recovery checks remain required.** See the dated acceptance record; repository publication is not a new end-to-end verification.
+The original private prototypes passed live retrieval/generation checks, including desktop and Google Drive evidence. The portable starters have build and offline test evidence. **Cloud app adaptation, full semantic evaluations and hosted serving-independence checks remain required.** The pipeline and publisher have fresh installed-release/Cloud rehearsal evidence in ACCEPTANCE.md. See the dated acceptance record; repository publication is not a new end-to-end verification.
 
 Prototype Sites remain separately controlled and owner-private. Repository access does not grant access to those apps or the owner's data. For a team demonstration, arrange an owner-led screen share or an explicitly approved sample-only deployment.
 
 ## Repository contents and maintenance
 
-- `guides/searchaf-agent/`: runnable starters, Atlas samples, evaluations, handoff and package tooling.
+- `guides/searchaf-agent/`: runnable starters, Atlas samples, evaluations, handoff and validation tooling.
 - `skills/use-cases/build-antfly-searchaf-agent/`: optional reusable Skill; keep it with the guide.
 - `docs/`: facilitator kit, planning, troubleshooting and historical engineering findings.
 - `scripts/validate_repo.py`: link, artifact and credential-pattern checks plus three-path bootstrap verification.
@@ -65,7 +66,6 @@ This standalone snapshot comes from the Antfly Skills workshop guide. It does no
 
 ```sh
 python3 scripts/validate_repo.py
-python3 guides/searchaf-agent/scripts/package.py --output /tmp/antfly-workshop-v0.3.1.zip
 ```
 
-The ZIP contains the participant guide/Skill, three starters, agenda and facilitator notes. Clone this repository for the full internal planning and engineering materials.
+Participant setup uses this repository; no ZIP is distributed. Record the checked-out commit for reproducible rehearsals.

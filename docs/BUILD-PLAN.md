@@ -1,5 +1,8 @@
 # Team build plan and timeline
 
+This document covers the earlier local-tunnel prototype. For the current local → Cloud → deployment workshop, use [the handoff](../guides/searchaf-agent/AGENT-HANDOFF.md), [Cloud promotion](../guides/searchaf-agent/CLOUD-PROMOTION.md), and [the current agenda](AGENDA.md). Cloud implementation and rehearsal gates are recorded there.
+
+
 The hosted prototype has been confirmed working by the user. The next work is to make setup repeatable for someone with a different Mac, account, corpus, and API organization.
 
 ## Ownership

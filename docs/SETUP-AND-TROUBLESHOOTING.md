@@ -1,5 +1,8 @@
 # Participant setup and troubleshooting
 
+This document covers the earlier local-tunnel prototype. For the current local → Cloud → deployment workshop, use [the handoff](../guides/searchaf-agent/AGENT-HANDOFF.md), [Cloud promotion](../guides/searchaf-agent/CLOUD-PROMOTION.md), and [the current agenda](AGENDA.md). Cloud implementation and rehearsal gates are recorded there.
+
+
 **Internal authoring runbook.** Convert this into participant instructions after the clean-machine rehearsal. Commands and download links that depend on account access or release versions must be verified by the named owner before distribution.
 
 ## Complete setup sequence

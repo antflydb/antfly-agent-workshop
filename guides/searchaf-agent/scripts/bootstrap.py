@@ -16,5 +16,7 @@ for item in (g/'starter').iterdir():
 shutil.copytree(g/'starter'/({'knowledge':'site','meeting-prep':'meeting-site','project-handoff':'handoff-site'}[a.agent]),dest/'site')
 (dest/'WORKSHOP-AGENT.json').write_text(__import__('json').dumps({'agent':a.agent})+'\n')
 shutil.copytree(g/'sample-data',dest/'sample-data')
+shutil.copy2(g/'corpus-checks.json',dest/'corpus-checks.json')
+shutil.copy2(g/'corpus-manifest.json',dest/'corpus-manifest.json')
 print('Created starter workspace:',dest)
 print('Next: follow AGENT-HANDOFF.md. No database or account changes were made.')
