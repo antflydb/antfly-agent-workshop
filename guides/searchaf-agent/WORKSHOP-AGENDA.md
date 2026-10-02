@@ -12,11 +12,11 @@ A tested corpus, a repeatable selected-corpus publication workflow, and a privat
 
 - Confirm supported Mac, SearchAF, Node/Python, authorized OpenAI API billing/model, Antfly Cloud organization/instance/table/budget and private Sites access.
 - Bootstrap the reference starter and index the synthetic packet. Pass all four named-source local passage checks.
-- Rehearse the supplied enrichment/export/publisher commands in PIPELINE-QUICKSTART.md, then build and freeze the server-side Cloud REST app adaptation described in CLOUD-PROMOTION.md. The web app adaptation is not shipped. Record actual commands and test results.
+- Use the supplied enrichment/export/publisher commands in PIPELINE-QUICKSTART.md and configure the supplied Cloud app following CLOUD-PROMOTION.md. Record actual commands and test results.
 - Rehearse publication, Cloud passage parity, real cited answers, private deployment, unauthenticated denial and the final second-device check. Prepare a versioned export so extraction does not consume the live session.
 - Keep credentials out of chat/screens. Personal corpora and Drive require separate Cloud-upload authorization; they are extensions.
 
-**Go/no-go:** until Cloud mode and clean-account deployment are rehearsed, use a clearly labeled facilitator demo/build walkthrough with saved synthetic results. Do not advertise the unchanged local starter as a turnkey Cloud lab. Freeze the Cloud-capable repository revision before attendee prework and measure setup, latency and cost before promising time/budget.
+**Go/no-go:** verify the selected Cloud configuration and private deployment before the event. If access or deployment is blocked, use a clearly labeled facilitator walkthrough with synthetic results. Freeze the repository revision before attendee prework and measure setup, latency and cost before promising time/budget.
 
 ## 60-minute run of show
 
@@ -31,7 +31,7 @@ A tested corpus, a repeatable selected-corpus publication workflow, and a privat
 | 53–58 | Stop local runtime; test from another device | Fresh hosted questions still succeed; no local fallback |
 | 58–60 | Demo-to-production next steps | Owner/cadence for refresh/removal, access, recovery and spend controls |
 
-Cloud provisioning/account setup and implementation occur in prework. Live publication/deployment use the rehearsed commands and approved existing targets. Move a blocked participant to a prepared sample-only paired exercise; no private owner data is a fallback.
+Cloud provisioning/account setup occur in prework. Live publication/deployment use the rehearsed commands and approved existing targets. Move a blocked participant to a prepared sample-only paired exercise; no private owner data is a fallback.
 
 ## Exercises and answer key
 
@@ -59,10 +59,10 @@ Run the same suite locally where supported and through Cloud. Retrieval parity m
 | 30–40 | Private deployment and second-device serving-independence check |
 | 40–45 | Production next steps and optional paths |
 
-Use preconfigured, rehearsed Cloud-capable code. Label saved results as saved; do not imply account provisioning or missing Cloud implementation happened live.
+Use preconfigured, rehearsed Cloud-capable code. Label saved results as saved; do not imply account provisioning or unrun checks happened live.
 
 ## Extensions and materials
 
-Meeting-prep and project-handoff can reuse the published Cloud corpus after adapting each app to Cloud retrieval. Optional personal/local agents use LOCAL-TUNNEL.md and remain dependent on the Mac. Drive needs separate ingestion, upload authorization and update/revocation design.
+Meeting-prep and project-handoff can reuse the published Cloud corpus using the same Cloud settings. Optional personal/local agents use LOCAL-TUNNEL.md and remain dependent on the Mac. Drive needs separate ingestion, upload authorization and update/revocation design.
 
 Read AGENT-HANDOFF.md, CLOUD-PROMOTION.md, FACILITATOR-NOTES.md and ACCEPTANCE.md in the repository. Historical private prototypes are not attendee fallback apps or evidence that the new Cloud flow has passed.

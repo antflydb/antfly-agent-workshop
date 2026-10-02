@@ -1,10 +1,10 @@
 # Promote the selected corpus to Antfly Cloud
 
-This is the build and acceptance contract for the workshop’s **local prototype → Cloud corpus → deployed support agent** path. It describes the Cloud-capable working copy to build from the supplied reference starter. The shipped app and adapter still implement the optional [local-tunnel path](LOCAL-TUNNEL.md); the enrichment checker and publisher are supplied, while the Cloud-mode web app remains to be built. Execute [PIPELINE-QUICKSTART.md](PIPELINE-QUICKSTART.md) for the actual commands. Complete implementation and a clean-account rehearsal before running this as a hands-on deployment lab.
+The workshop uses **local extraction → Cloud corpus → deployed support agent**. All three supplied apps query Antfly Cloud through server-side REST by default. Execute [PIPELINE-QUICKSTART.md](PIPELINE-QUICKSTART.md) to publish the corpus, then configure the app below. The [local-tunnel path](LOCAL-TUNNEL.md) remains an explicit optional mode.
 
 ## 1. Freeze the local baseline
 
-Use the Atlas packet as the main-session corpus. Pass the existing local local native-MCP diagnostic and all four cases in `corpus-checks.json`. Record the seven source files, extraction state and checks without collecting personal content. The PDF and two PNGs must have their actual extracted body/OCR text; titles and generated summaries alone are insufficient. Preserve the original local index.
+Use the Atlas packet as the main-session corpus. Pass the existing local native-MCP diagnostic and all four cases in `corpus-checks.json`. Record the seven source files, extraction state and checks without collecting personal content. The PDF and two PNGs must have their actual extracted body/OCR text; titles and generated summaries alone are insufficient. Preserve the original local index.
 
 This workshop publishes a **selected corpus snapshot**, not the entire SearchAF database. Google Drive and personal corpora are optional extensions with separate upload authorization.
 
@@ -28,7 +28,7 @@ Run `local/export_corpus.py` and `local/publish_corpus.py` as documented in PIPE
 
 Name and document the actual resulting command, arguments, safe credential-entry method, output and repeat/update behavior in the working copy. Run it twice to prove idempotence. Do not present a hypothetical command as shipped tooling.
 
-## 4. Build server-side Cloud retrieval into the app
+## 4. Configure server-side Cloud retrieval
 
 Use the public authenticated REST query endpoint. Cloud v0.2.5 native MCP failed actual write denial in rehearsal; REST passed. Verify enforcement on the interface used:
 
@@ -41,11 +41,44 @@ The recommended serving path is **private app → server-side bounded retrieval 
 
 Preserve the reference app’s evidence contract: a bounded query, exact source excerpts with stable citation IDs, tool-evidence capture, rejection of unknown/missing citations, and fail-closed errors. Use explicit instance/table/corpus-version scope and read-only Cloud credentials. Reject a request for another table or corpus. The model must never receive database write/admin tools. Enforce the actual Cloud permissions; filtering UI options is insufficient.
 
-Replace the reference starter’s `tunnel_id` tool wiring in Cloud mode with server-executed retrieval. Adapt request handlers, status/configuration checks, smoke scripts and development environment loading together. Choose and document the Cloud configuration fields in the implementation; they are not present in the shipped `.env.example`. Preserve the citation tests and add meaningful scope/error-path checks. The model provider’s current tool API determines the tool loop; do not blindly substitute the Cloud REST URL for the workshop gateway URL, because native database tools do not emit the reference app’s `sources` evidence shape.
+The apps execute `search_workshop_files` on the server and return bounded excerpts with stable citation IDs to the OpenAI tool loop. Configure these fields in the working copy’s ignored `.env.local`; use hosted server secrets when deploying:
 
-Remove Cloud mode’s dependency on `swarm-owner.json`, SearchAF configuration, local roots, filesystem existence, local ports and tunnel processes. No automatic fallback to local retrieval is allowed. Missing or failed Cloud retrieval must show an error and withhold unsupported answers.
+```dotenv
+ANTFLY_RETRIEVAL_MODE=cloud
+ANTFLY_CLOUD_API_BASE=https://platform.antfly.io/cloud/v1/<instance_id>
+ANTFLY_CLOUD_TABLE=<dedicated_workshop_table>
+ANTFLY_CORPUS_VERSION=<version_from_publisher>
+ANTFLY_CLOUD_API_KEY=<table_scoped_read_only_key>
+OPENAI_API_KEY=<model_api_key>
+OPENAI_MODEL=<available_model>
+```
 
-For another agent variant, complete the same Cloud adaptation before claiming it can reuse this Cloud corpus. The three unchanged reference starters remain local-tunnel implementations.
+The API base ends at the instance ID; the app constructs the `/db/v1/tables/<table>/query` route. Use the exact corpus version reported by the exporter/publisher, not a guessed date. Never put real keys into example files. No Cloud implementation step is required to use the supplied apps.
+
+Cloud mode has no dependency on `swarm-owner.json`, SearchAF configuration, local roots, local ports or tunnel processes. Missing or failed Cloud retrieval produces an error without falling back to the laptop.
+
+Knowledge/support, meeting-prep and project-handoff use the same Cloud configuration. Set `ANTFLY_RETRIEVAL_MODE=local-tunnel` and `ANTFLY_TUNNEL_ID` only when choosing the optional local path; that path requires its running adapter and tunnel.
+
+From the working-copy root, install dependencies and run the app checks/preview:
+
+```sh
+cd site
+npm ci
+npm test
+npm run typecheck
+npm run build
+npm run dev -- --host 127.0.0.1
+```
+
+In a separate terminal, run the support app’s model smoke check from `site/`:
+
+```sh
+node --experimental-strip-types smoke-answer.mjs \
+  --question 'When does the approved Project Atlas pilot launch? Cite the approved plan.' \
+  --expect 'October 15'
+```
+
+Meeting-prep uses `smoke-brief.mjs`; project-handoff uses `smoke-handoff.mjs`, with the inputs documented in each app README. These scripts use the configured retrieval mode. A passing smoke check does not verify hosted browser authentication. Preview does not require a tunnel in Cloud mode.
 
 ## 5. Deploy, then prove independence
 

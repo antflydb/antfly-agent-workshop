@@ -1,5 +1,8 @@
 # Workshop migration to native Antfly MCP
 
+Historical prototype record. Current portable apps use Cloud retrieval by default and retain explicit `local-tunnel` mode. Follow [the current handoff](../guides/searchaf-agent/AGENT-HANDOFF.md) for setup; the dated results below do not validate the current Cloud implementation.
+
+
 September 20, 2026
 
 The intended architecture is now implemented: **SearchAF for ingestion, Antfly database and native Antfly MCP for retrieval, OpenAI for answers, Sites for the interface.** No corpus reimport, database reset, Cloud migration or new API key was needed.

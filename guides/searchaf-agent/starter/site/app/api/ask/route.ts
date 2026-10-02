@@ -1,5 +1,5 @@
 import { getChatGPTUser } from '@/app/chatgpt-auth';
-import { answerQuestion } from '@/lib/answer';
+import { answerQuestion, configurationFromEnv } from '@/lib/answer';
 
 export async function POST(request: Request) {
   const user = await getChatGPTUser();
@@ -12,14 +12,14 @@ export async function POST(request: Request) {
   let body;
   try { body = JSON.parse(raw); } catch { return Response.json({ error: 'Invalid request.' }, { status: 400 }); }
   if (typeof body.question !== 'string' || !body.question.trim() || body.question.length > 2000) return Response.json({ error: 'Enter a question between 1 and 2,000 characters.' }, { status: 400 });
-  const key = process.env.OPENAI_API_KEY;
-  const tunnel = process.env.ANTFLY_TUNNEL_ID;
-  if (!key || !tunnel) return Response.json({ error: 'The private connection is still being configured.' }, { status: 503 });
+  let config;
+  try { config = configurationFromEnv(process.env); }
+  catch { return Response.json({ error: 'The private connection is still being configured.' }, { status: 503 }); }
   try {
-    const answer = await answerQuestion(body.question.trim(), { key, tunnel, model: process.env.OPENAI_MODEL || 'gpt-6-astra' });
+    const answer = await answerQuestion(body.question.trim(), config);
     return Response.json(answer, { headers: { 'Cache-Control': 'no-store' } });
   } catch (error) {
-    const message = error instanceof Error && error.name !== 'TimeoutError' ? error.message : 'The request timed out. Check SearchAF and the tunnel, then retry.';
+    const message = error instanceof Error && error.name !== 'TimeoutError' ? error.message : 'The request timed out. Check the configured retrieval connection, then retry.';
     return Response.json({ error: message }, { status: 502, headers: { 'Cache-Control': 'no-store' } });
   }
 }

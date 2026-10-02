@@ -1,14 +1,12 @@
 # Working copy
 
-Follow the supplied `guides/searchaf-agent/AGENT-HANDOFF.md` from the original bundle.
+Follow `guides/searchaf-agent/AGENT-HANDOFF.md` in the cloned repository. Bootstrap this directory once and reuse it for later steps.
 
-- `local/`: native Antfly MCP adapter and launcher
-- `site/`: private Sites app
-- `sample-data/`: copied here by bootstrap
-- `.env.example`: fields for your private `.env.local`
+- `local/`: enrichment checks, corpus exporter/publisher and optional native Antfly MCP adapter
+- `site/`: private app with Cloud retrieval by default
+- `sample-data/`: the folder to select in SearchAF after bootstrap
+- `.env.example`: fields for your private `.env.local` in this working-copy root
 
-Configuration and secrets are intentionally absent. SearchAF ingests; Antfly MCP retrieves. The app never needs a SearchAF MCP token.
+Follow PIPELINE-QUICKSTART.md to ingest, verify and publish the seven-source packet. Follow CLOUD-PROMOTION.md to set the approved instance API base, dedicated table, exact published corpus version, table-scoped read-only key and OpenAI key/model. Keep hosted credentials as server-only secrets. All three app variants support these settings.
 
-## Cloud workshop path
-
-This is the local-tunnel reference implementation. Bootstrap installs local enrichment checks and the Cloud publisher, while the web app remains the local-tunnel reference. Read PIPELINE-QUICKSTART.md for local → Cloud corpus verification. Follow `AGENT-HANDOFF.md` and `CLOUD-PROMOTION.md` in the original bundle to adapt this isolated working copy; use `LOCAL-TUNNEL.md` for the optional existing personal-agent route. Do not deploy the unchanged starter and claim serving independence.
+Cloud answering needs no running laptop adapter or tunnel. For optional local retrieval, set `ANTFLY_RETRIEVAL_MODE=local-tunnel` and follow LOCAL-TUNNEL.md; the Mac, scoped adapter and tunnel must remain available. Neither mode uses a SearchAF MCP Manual token, and Cloud failures never fall back to local retrieval.

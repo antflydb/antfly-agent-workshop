@@ -1,5 +1,8 @@
 # Third workshop agent: Project Handoff
 
+Historical prototype record. Current portable apps use Cloud retrieval by default and retain explicit `local-tunnel` mode. Follow [the current handoff](../guides/searchaf-agent/AGENT-HANDOFF.md) for setup; the dated results below do not validate the current Cloud implementation.
+
+
 Private prototype: (owner-private prototype; request its URL from the facilitator)
 
 This third experience uses the same SearchAF-ingested Antfly index and native Antfly MCP tunnel as Knowledge and Fieldnotes. It adds no data ingestion or calendar connection. All three private apps have links to each other.

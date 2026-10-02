@@ -8,7 +8,7 @@ The publication uploads selected document bodies. Answering sends retrieved exce
 
 ## Readiness and preparation
 
-The current reference starter is local-tunnel code. Cloud publication, configuration, server-side retrieval and smoke checks must be implemented and frozen following CLOUD-PROMOTION.md before a timed lab. No Cloud implementation or second-device pass is claimed by this documentation revision. Assign a named technical owner for that work and a separate clean-account rehearsal.
+All three supplied apps include Cloud retrieval by default. Configure the instance, table, corpus version and server-only keys following CLOUD-PROMOTION.md. Verify the publication, real model answers and private hosted flow before a timed lab; implementation alone is not a second-device pass.
 
 | When | Deliverable |
 | --- | --- |
@@ -19,7 +19,7 @@ The current reference starter is local-tunnel code. Cloud publication, configura
 | T−30 minutes | Approved table/corpus version, instance readiness, actual hosted request and second device ready |
 | T+1 day | Outcome record and follow-ups without collecting private content |
 
-Until the Cloud-capable repository revision and full path are rehearsed, present a facilitator demo/build walkthrough and label missing/unrun stages. The original local prototypes cannot satisfy Cloud gates.
+Until the selected configuration and full path are verified, present a facilitator demo/build walkthrough and label missing/unrun stages. The original local prototypes cannot satisfy Cloud gates.
 
 ## Run-of-show cues
 
@@ -40,7 +40,7 @@ Deploy the actual tested Cloud-capable source privately. Verify signed-in genera
 | Local passage missing | Extraction/indexing, selected roots and actual body text |
 | Cloud passage missing | Full-body publication, hash/version parity, index/model configuration and read-only grants |
 | Cloud tools missing | Ready instance, correct /db/v1 table-query route and verified instance/table permissions |
-| Site works only while Mac runs | Residual tunnel/local-port/filesystem dependency; incomplete Cloud adaptation |
+| Site works only while Mac runs | Check `ANTFLY_RETRIEVAL_MODE`; choose Cloud for independent serving |
 | Site opens but cannot answer | Hosted server-only secrets, Cloud connection settings, app retrieval logs and actual model access |
 | Sites unavailable | Finish possible checks; use a Sites-enabled handoff and report deployment unrun |
 | Unsupported claim has a citation | Inspect passage support; record semantic evaluation failure |

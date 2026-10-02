@@ -2,13 +2,13 @@
 
 Package version: **0.5.0 experimental**, September 30, 2026.
 
-Read this file before executing in the repository/package root. For Harnessing Your First Agent, build a **support agent** using the knowledge starter and synthetic Atlas packet. Meeting preparation and project handoff are later extensions.
+Read this file from the cloned repository root. For Harnessing Your First Agent, build a **support agent** using the knowledge starter and synthetic Atlas packet. Meeting preparation and project handoff are later extensions.
 
 ## Outcome and implementation status
 
 SearchAF extracts the selected packet into its existing local Antfly index. Verify that baseline, publish only the selected extracted corpus and retrieval configuration to Antfly Cloud, then deploy a private agent with hosted bounded retrieval. The final gate is a fresh cited answer from the deployed app with the local runtime stopped.
 
-**Local enrichment checks and the selected-corpus publisher are supplied.** Execute [PIPELINE-QUICKSTART.md](PIPELINE-QUICKSTART.md) for the rehearsed SearchAF → Antfly Cloud path. The shipped web app is still the optional local-tunnel reference; its server-side Cloud REST retrieval/configuration/smoke checks must be built and rehearsed before the hosted-app lab. [LOCAL-TUNNEL.md](LOCAL-TUNNEL.md) preserves that optional path.
+All three apps include server-side Antfly Cloud REST retrieval, enabled by default. Execute [PIPELINE-QUICKSTART.md](PIPELINE-QUICKSTART.md) to extract and publish the corpus, then configure the app using [CLOUD-PROMOTION.md](CLOUD-PROMOTION.md). Set `ANTFLY_RETRIEVAL_MODE=local-tunnel` only for the optional [LOCAL-TUNNEL.md](LOCAL-TUNNEL.md) path. There is no automatic fallback between modes.
 
 Preserve local documents, indexes, accounts and unrelated connections. Do not reset SearchAF or upload its entire database. This exercise publishes selected extracted bodies to Cloud; permission to index locally is not automatically permission to publish personal data. Use the repository’s synthetic packet for the main session. Never put keys in prompts, source control, browser bundles or reports.
 
@@ -26,11 +26,11 @@ Create an owner-private deployment with workspace-admin access as required by th
 | OpenAI | Authorized API key/billing and tested available model |
 | Hosting | Sites tools/access and a new private site, or an explicitly selected existing target |
 
-Tools: supported Mac and SearchAF for the prototype; Node >=22.13, npm and Python 3.12 (or `uv`); Antfly Cloud access; Sites publishing tools. The optional local-tunnel path additionally needs `tmux`, Platform tunnel permissions and the pinned client. Complete account setup and the Cloud-mode working implementation before the timed session.
+Tools: supported Mac and SearchAF for the prototype; Node >=22.13, npm and Python 3.12 (or `uv`); Antfly Cloud access; Sites publishing tools. The optional local-tunnel path additionally needs `tmux`, Platform tunnel permissions and the pinned client. Complete account setup before the timed session.
 
 ## 1. Create an isolated working copy
 
-From the repository/package root:
+From the cloned repository root, create the working copy once. If a previous prompt already created it, reuse that directory and continue with the next unfinished step; do not bootstrap again:
 
 ```sh
 python3 guides/searchaf-agent/scripts/bootstrap.py --agent knowledge --destination "$HOME/antfly-files-workshop"
@@ -43,7 +43,7 @@ cd ..
 local/.venv/bin/python -m unittest discover -s local -p 'test_*.py'
 ```
 
-Bootstrap refuses an existing destination and makes no database/account changes. It copies the reference app, sample packet, enrichment checker and Cloud publisher; it does not adapt the web app to Cloud mode. Read CLOUD-PROMOTION.md in the original repository while adapting the working copy. Use `--agent meeting-prep` or `--agent project-handoff` only for an explicitly selected extension; each requires the same Cloud adaptation before independent deployment. Preserve lockfiles.
+Bootstrap refuses an existing destination and makes no database/account changes. It copies the Cloud-capable app, sample packet, enrichment checker and publisher. Read CLOUD-PROMOTION.md in the cloned repository for configuration. Use `--agent meeting-prep` or `--agent project-handoff` for an explicitly selected extension; all three apps support the same Cloud settings. Preserve lockfiles. Index the working copy’s `sample-data`, not the separate copy inside the cloned repository.
 
 ## 2. Ingest and verify the local baseline
 
@@ -67,9 +67,9 @@ Execute PIPELINE-QUICKSTART.md sections 3–4 using the supplied `local/export_c
 
 **Gate:** seven exact current-source bodies, idempotent publication, four Cloud passage checks and enforced Read-only/table scope on REST. A ready instance or matching count alone is insufficient.
 
-## 4. Build the Cloud-capable app and preview it
+## 4. Configure the app and preview it
 
-Follow CLOUD-PROMOTION.md section 4. Implement bounded server-side retrieval over authenticated Cloud REST queries with a table-scoped read-only key. Replace the local tunnel wiring and filesystem grants in Cloud mode; retain exact excerpts, tool-evidence capture and citation validation. Update configuration/status, request handlers and smoke scripts coherently. Test scope restriction and failure without local fallback.
+Follow CLOUD-PROMOTION.md section 4. Copy `.env.example` to a private `.env.local` in the working-copy root and configure the approved Cloud endpoint, table, published corpus version, read-only key and OpenAI key/model. Cloud is the default transport; no tunnel, local adapter or SearchAF runtime is required to answer from the published corpus. Keep keys server-side.
 
 Run the selected app’s tests, typecheck and production build in the working copy. Start the development preview bound to loopback. The shipped starter’s `npm test`, `npm run typecheck` and `npm run build` remain the app checks; document any added Cloud diagnostics and their real command paths. Development environment files do not configure hosted secrets.
 
@@ -97,4 +97,4 @@ For cleanup, stop only owned temporary processes and follow the normal deploymen
 
 ## Facilitated workshop
 
-Use [WORKSHOP-AGENDA.md](WORKSHOP-AGENDA.md) and [FACILITATOR-NOTES.md](FACILITATOR-NOTES.md). Rehearse a Cloud-capable working copy and the final second-device check before the live session. The main exercise is one support agent; variants, Drive and the optional local-tunnel route follow later.
+Use [WORKSHOP-AGENDA.md](WORKSHOP-AGENDA.md) and [FACILITATOR-NOTES.md](FACILITATOR-NOTES.md). Verify the configured working copy and final second-device check before the live session. The main exercise is one support agent; variants, Drive and the optional local-tunnel route follow later.

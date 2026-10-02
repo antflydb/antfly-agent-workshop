@@ -1,43 +1,42 @@
 # Antfly Fieldnotes — meeting-prep agent
 
-A second private agent over the same SearchAF-ingested Antfly database as the knowledge agent. This app takes a meeting topic, participants, goal and duration, then retrieves through the existing scoped Antfly MCP tunnel and produces a structured briefing.
+A private meeting-prep app over the same published Antfly corpus as the support agent. Supply a topic, participants, goal and duration to generate an evidence-backed brief.
 
 ## What it produces
 
-- Source-backed background and prior decisions/proposals, with explicit status.
-- Differences between documents and gaps in the retrieved evidence.
+- Source-backed context and decisions, distinguishing proposals from established decisions.
+- Supported differences between documents and gaps in retrieved evidence.
 - A suggested agenda whose minutes add up to the selected duration.
-- Suggested questions and expandable source excerpts.
-- Copy and print/PDF actions. No calendar events, email or persistent brief storage.
+- Questions, expandable source excerpts, and manual Copy/Print actions.
 
-## Runtime
+It does not create calendar events, send messages or store briefs.
 
-Use server-only `OPENAI_API_KEY`, `ANTFLY_TUNNEL_ID`, and `OPENAI_MODEL`. Use the participant’s authorized workshop key/tunnel; do not register SearchAF MCP or reimport the corpus. The Site must remain owner-only because all requests share one authorized local index.
+## Connection
 
-Local preview reads the explicitly selected `WORKSHOP_ENV_FILE`; production uses Sites runtime secrets. The preview sign-in is a development convenience, not an internet-facing authentication boundary.
+Cloud retrieval is the default. Configure server-only `OPENAI_API_KEY`, `ANTFLY_CLOUD_API_BASE`, `ANTFLY_CLOUD_TABLE`, `ANTFLY_CORPUS_VERSION`, and `ANTFLY_CLOUD_API_KEY` using the published workshop corpus and its table-scoped read-only key. `OPENAI_MODEL` is optional. The app queries Antfly directly from its server and passes bounded source excerpts to OpenAI; it does not need SearchAF or a tunnel while serving. See [Cloud promotion](../../CLOUD-PROMOTION.md).
+
+To use the optional local reference instead, explicitly set `ANTFLY_RETRIEVAL_MODE=local-tunnel` and `ANTFLY_TUNNEL_ID`; keep SearchAF and that tunnel running. Cloud errors never fall back to local retrieval.
+
+Local preview reads `WORKSHOP_ENV_FILE` (default `../.env.local`); deployment uses server runtime secrets. Never commit credentials or expose them through browser environment variables. Keep the Site owner-only: a shared corpus key does not provide per-viewer source authorization.
+
+## Run and check
+
+Use Node 22.13+ and run:
 
 ```sh
 npm ci
 npm test
 npm run typecheck
 npm run build
+WORKSHOP_ENV_FILE=/absolute/path/to/approved.env npm run dev
 ```
 
-## Validation
+Citation validation checks source IDs and output structure, not whether every assertion follows from the excerpt. Inspect the evidence and treat the corpus as a snapshot; it cannot establish current status or exhaustive history. Hosted sign-in, browser interaction, and live model checks must be recorded separately from unit tests and builds.
 
-Five unit tests cover citation provenance, input limits, agenda durations, read-only retrieval, errors and empty evidence. A live request through the local authenticated app endpoint returned a brief with 19 excerpts from local files and Google Drive, source-backed context/decisions, and four agenda items totaling 30 minutes.
+Optional live check (incurs model usage):
 
-Citation IDs are checked against actual tool results; factual entailment still requires review. The source is an indexed snapshot and may omit oversized documents. The agent must not claim a proposal was agreed merely because it appears in a document.
+```sh
+node --experimental-strip-types smoke-brief.mjs --topic "Project Atlas pilot" --goal "Review launch readiness" --duration 30
+```
 
-The browser automation service was unavailable in this environment. Local HTTP rendering passed and the user-facing preview was opened; visual interaction QA and experimental WebMCP verification are not claimed.
-
-## Workshop choice
-
-Both paths share ingestion, index, scope and tunnel setup:
-
-1. Knowledge agent: ask questions and inspect cited answers.
-2. Meeting-prep agent: supply meeting context and inspect an evidence-backed brief.
-
-The application prompts and presentation differ. No new database or source connection is needed.
-
-Optional server setting `KNOWLEDGE_AGENT_URL` links the participant’s own knowledge-agent deployment. Leave unset until that app exists.
+The smoke check reports counts rather than private source content. Optional `KNOWLEDGE_AGENT_URL` links your existing support app; leave unset until that deployment exists.

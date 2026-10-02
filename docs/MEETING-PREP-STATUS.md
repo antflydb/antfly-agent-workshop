@@ -1,5 +1,8 @@
 # Meeting-prep agent — September 20, 2026
 
+Historical prototype record. Current portable apps use Cloud retrieval by default and retain explicit `local-tunnel` mode. Follow [the current handoff](../guides/searchaf-agent/AGENT-HANDOFF.md) for setup; the dated results below do not validate the current Cloud implementation.
+
+
 Published privately: (owner-private prototype; request its URL from the facilitator)
 
 - Separate navy/ivory briefing layout with meeting topic, participants, goal and duration.

@@ -2,7 +2,7 @@ schema_version: 1
 id: searchaf-agent
 title: Prototype locally and deploy independently
 subtitle: Extract with SearchAF, publish selected evidence to Antfly Cloud, and deploy a private support agent.
-outcome: Verify a local corpus, build its Cloud publication and hosted retrieval path, and prove cited hosted answers work with the local runtime stopped.
+outcome: Verify a local corpus, publish it and configure hosted retrieval, and prove cited hosted answers work with the local runtime stopped.
 maturity: experimental
 audience:
   - developers
@@ -27,7 +27,7 @@ verification:
 compatibility:
   operating_system: macOS; original prototype on Apple Silicon
   runtime: Python 3.12 and Node 22.13 or later; optional local path uses pinned tunnel-client 0.0.14
-  data: Local SearchAF extraction baseline and dedicated versioned Cloud corpus; Cloud-capable working implementation required
-  agent_handoff: Codex or Claude Code can read the bundled instructions; Sites publishing requires Sites tools/access
+  data: Local SearchAF extraction baseline and dedicated versioned Cloud corpus; Cloud retrieval supplied in all three apps
+  agent_handoff: Codex or Claude Code can read the repository instructions; Sites publishing requires Sites tools/access
 provenance:
   repository: antflydb/antfly-skills
