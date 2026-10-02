@@ -2,6 +2,12 @@
 
 Package 0.5.0 · September 30, 2026 · experimental
 
+## Current Cloud app implementation (October 2026)
+
+Knowledge/support, meeting-prep and project-handoff now include server-side Antfly Cloud REST retrieval, with `ANTFLY_RETRIEVAL_MODE=cloud` as the default and explicit `local-tunnel` support. Cloud settings pin the instance, table and corpus version; the read-only key stays server-side. Cloud mode has no local-runtime fallback.
+
+Record current automated checks and live Cloud/model/hosted results separately here. The dated evidence below predates this app implementation and does not validate the new app transport or a new deployment.
+
 ## Portable package verification
 
 - Starter copied into a new isolated working directory; no personal files, connection configuration, credentials or deployment IDs copied.
@@ -105,3 +111,12 @@ Important finding: native Cloud MCP accepted a real identical upsert using the R
 Semantic chunking is disabled by the default CLIP-family text embedder. The verified contract is complete enrichment of this packet under the supported document-vector configuration, not all optional media formats/models or chunk-level retrieval. Cloud publication transfers selected full extracted bodies/provenance and recreates document retrieval; it does not migrate originals, image-vector bytes, graph tables or personal account bindings.
 
 Hosted-app adaptation, OpenAI answers/citations, second-device browser authentication and hosted-app independence remain separate unimplemented/unrun stages. Final supplied commands also passed under Python 3.12.11 with requirements.lock installed using uv. All seven Cloud rows had independently queryable full-text and vector coverage. The same final publisher ran twice with the same IDs/version. The verify-only command passed all Cloud checks after both owned local runtimes stopped. The temporary publisher was revoked and subsequent REST authentication returned 401. Existing unrelated keys, sources and instance capacity were preserved.
+
+
+## October 2, 2026: Cloud-capable example apps
+
+All three examples now default to server-side Cloud REST retrieval. Local-tunnel retrieval remains an explicit configuration option; Cloud failures do not fall back locally. The app exposes only bounded search to the model, retains exact excerpts and validates citations against captured evidence.
+
+Fresh checks: support app 7 tests; meeting-prep 11 tests; project-handoff 11 tests. All three typechecks and production builds passed. A live invocation of the support app's Cloud retrieval function, using the existing workshop table and read-only key, passed all four named-source passage checks (Markdown, PDF, screenshot, scanned checklist). No local gateway or tunnel was used by that invocation.
+
+Live OpenAI generation and new hosted deployment/browser authentication checks were not run: no model credential was supplied for this revision. The dated results above remain historical.

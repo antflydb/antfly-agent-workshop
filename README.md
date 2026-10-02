@@ -2,7 +2,7 @@
 
 **Prototype locally, deploy independently.** Extract selected files with SearchAF, publish a tested corpus to Antfly Cloud, and deploy a private support agent with hosted retrieval.
 
-Internal workshop repository · experimental · starter repository. The repository supplies verified local enrichment and Cloud publication commands in [Pipeline quickstart](guides/searchaf-agent/PIPELINE-QUICKSTART.md). The web app still implements the optional local-tunnel reference path. [Cloud promotion](guides/searchaf-agent/CLOUD-PROMOTION.md) defines the Cloud-capable app adaptation to build and rehearse before the hosted-app lab.
+Internal workshop repository · experimental · starter repository. The repository supplies verified local enrichment and Cloud publication commands in [Pipeline quickstart](guides/searchaf-agent/PIPELINE-QUICKSTART.md). All three example apps include Cloud REST retrieval by default. [Cloud promotion](guides/searchaf-agent/CLOUD-PROMOTION.md) documents their configuration; local-tunnel retrieval remains an explicit option.
 
 ## Start here
 
@@ -22,7 +22,7 @@ Internal workshop repository · experimental · starter repository. The reposito
 | Meeting prep / Fieldnotes | Prepare context, questions and a suggested agenda | `guides/searchaf-agent/starter/meeting-site` |
 | Project Handoff | Transfer background, decisions, documented work and a reading list | `guides/searchaf-agent/starter/handoff-site` |
 
-The main session builds one support agent. Meeting prep and project handoff can reuse the Cloud corpus after each app has Cloud retrieval support. The original three reference starters remain tunnel-based.
+The main session builds one support agent. Meeting prep and project handoff reuse the same Cloud corpus and connection settings.
 
 ```text
 Prototype: selected files → SearchAF → local Antfly → passage checks
@@ -37,7 +37,7 @@ SearchAF MCP and its Manual token are not used. Cloud publication sends selected
 
 Clone the repository, then give your coding agent this instruction:
 
-> Read `guides/searchaf-agent/AGENT-HANDOFF.md`. Follow CLOUD-PROMOTION.md and bootstrap the support agent into a new working directory. Start with the synthetic sample corpus. Run PIPELINE-QUICKSTART.md using the supplied publisher; build the Cloud-capable app before the hosted-app lab. Preserve existing data and connections, use native MCP locally and the enforced Cloud REST query API, and report each verification stage separately.
+> Read `guides/searchaf-agent/AGENT-HANDOFF.md`. Follow CLOUD-PROMOTION.md and bootstrap the support agent into a new working directory. Start with the synthetic sample corpus. Run PIPELINE-QUICKSTART.md using the supplied publisher, then configure the app’s Cloud settings. Reuse an existing workshop working copy rather than bootstrapping it again. Preserve existing data and connections, use native MCP locally and the enforced Cloud REST query API, and report each verification stage separately.
 
 Example bootstrap (does not ingest or deploy):
 
@@ -49,9 +49,9 @@ Supported pilot environment: macOS, SearchAF, Node 22.13+, Python 3.12 (or uv); 
 
 ## Workshop format and readiness
 
-Plan 60 minutes with required prework; a 45-minute demo option is included. Each participant builds one agent. Google Drive, additional agents and local-tunnel hosting are optional extensions. Cloud mode must be implemented and rehearsed before this live format.
+Plan 60 minutes with required prework; a 45-minute demo option is included. Each participant builds one agent. Google Drive, additional agents and local-tunnel hosting are optional extensions. Verify the chosen account, corpus and deployment before the live session.
 
-The original private prototypes passed live retrieval/generation checks, including desktop and Google Drive evidence. The portable starters have build and offline test evidence. **Cloud app adaptation, full semantic evaluations and hosted serving-independence checks remain required.** The pipeline and publisher have fresh installed-release/Cloud rehearsal evidence in ACCEPTANCE.md. See the dated acceptance record; repository publication is not a new end-to-end verification.
+The original private prototypes passed live retrieval/generation checks, including desktop and Google Drive evidence. The portable starters have build and offline test evidence. Cloud retrieval is implemented in all three apps. **Real model/Cloud semantic evaluations and hosted serving-independence checks must still be recorded for each deployment.** The pipeline and publisher have fresh installed-release/Cloud rehearsal evidence in ACCEPTANCE.md. See the dated acceptance record; repository publication is not a new end-to-end verification.
 
 Prototype Sites remain separately controlled and owner-private. Repository access does not grant access to those apps or the owner's data. For a team demonstration, arrange an owner-led screen share or an explicitly approved sample-only deployment.
 
@@ -68,4 +68,4 @@ This standalone snapshot comes from the Antfly Skills workshop guide. It does no
 python3 scripts/validate_repo.py
 ```
 
-Participant setup uses this repository; no ZIP is distributed. Record the checked-out commit for reproducible rehearsals.
+Participant setup uses this repository; no ZIP is distributed. Record the checked-out commit for reproducible setup.

@@ -12,13 +12,13 @@ The screenshot and scanned worksheet are generated fixtures, not captures of a s
 
 ## Retrieval gate
 
-After bootstrap, index only the working copy's `sample-data` in SearchAF and configure the gateway for that root. From the working directory run:
+After bootstrap, index only the working copy's `sample-data` in SearchAF and configure the local checker/adapter for that root. From the working directory run:
 
 ```sh
 local/.venv/bin/python local/check.py --corpus-checks corpus-checks.json
 ```
 
-The checker uses native Antfly MCP and the workshop gateway, independently of OpenAI. A check passes only when every expected phrase is present in excerpts carrying the exact source filename. It normalizes whitespace and case for OCR line breaks. It prints format/pass status and oversized-document counts; it exits nonzero if any case fails. Expected answers remain outside the indexed corpus.
+The checker uses native Antfly MCP through the local adapter, independently of OpenAI. A check passes only when every expected phrase is present in excerpts carrying the exact source filename. It normalizes whitespace and case for OCR line breaks. It prints format/pass status and oversized-document counts; it exits nonzero if any case fails. Expected answers remain outside the indexed corpus.
 
 Then ask the three questions in the local app and deployed Site, inspecting each cited passage against the original file. A passage check proves retrieval, not semantic accuracy of the generated answer. The model receives extracted text and captions, not original images. Inferred captions may be wrong; the image and OCR are the evidence for exact error messages and checklist instructions.
 

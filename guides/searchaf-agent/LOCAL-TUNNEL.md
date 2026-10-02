@@ -1,5 +1,7 @@
 # Optional path: keep retrieval on your Mac
 
+This optional mode uses the same apps. Set `ANTFLY_RETRIEVAL_MODE=local-tunnel` in the working copy’s private `.env.local`, alongside `ANTFLY_TUNNEL_ID`, `OPENAI_API_KEY` and `OPENAI_MODEL`. Cloud is otherwise the default.
+
 This is the existing local-tunnel reference path from package 0.3.2. It remains available in 0.5.0. For the workshop’s main local → Cloud → deployment path, read [AGENT-HANDOFF.md](AGENT-HANDOFF.md). This optional path depends on the Mac and tunnel, and cannot pass the Cloud serving-independence gate.
 
 Read this file before executing. It works as a task document for Codex or Claude Code; automatic Skill installation is optional. Start in the package/repository root and locate this file at `guides/searchaf-agent/AGENT-HANDOFF.md`. All source is included under `starter/`; no earlier conversation, personal account or existing hosted app is required.
@@ -22,7 +24,7 @@ Work in a **new destination**. Do not edit the shipped starter in place. This pa
 | --- | --- |
 | Agent choice | `knowledge`, `meeting-prep`, or `project-handoff`; user selects |
 | New workspace directory | User chooses, or propose a new `~/antfly-files-workshop` |
-| Approved folder roots | Explicit user selection; begin with repository’s `sample-data` |
+| Approved folder roots | Explicit user selection; begin with the working copy’s `sample-data` |
 | SearchAF state directory | Default `~/.searchaf`; discover an override if needed |
 | OpenAI credential | Reuse a previously authorized key or obtain secure user setup; never ask for a key in chat |
 | Tunnel ID and organization | User's Platform tunnel; match the API key organization |
@@ -35,7 +37,7 @@ Proceed with offline setup while account inputs are pending. Stop only dependent
 
 ## 1. Create an isolated working copy
 
-From the package/repository root:
+From the cloned repository root, bootstrap only if no working copy already exists. Otherwise reuse the existing copy and continue with configuration:
 
 ```sh
 python3 guides/searchaf-agent/scripts/bootstrap.py --agent knowledge --destination "$HOME/antfly-files-workshop"
@@ -49,7 +51,7 @@ cd ..
 
 For meeting preparation, use `--agent meeting-prep`; for project handoff, use `--agent project-handoff`. The chosen app always appears at `site/`. To build multiple agents, use separate destination directories and reuse the existing approved index/tunnel; do not reingest or restart the first agent’s working connection. Only one local adapter/tunnel runtime is needed.
 
-If Python 3.12 is already on PATH, `python3.12 -m venv local/.venv` and `local/.venv/bin/python -m pip install -r local/requirements.lock` are equivalent. Bootstrap refuses an existing destination. No database changes occur.
+If Python 3.12 is already on PATH, `python3.12 -m venv local/.venv` and `local/.venv/bin/python -m pip install -r local/requirements.lock` are equivalent. Reuse an already-created workshop working copy. Bootstrap refuses an existing destination. No database changes occur.
 
 Run the offline adapter/setup checks from the working copy:
 
