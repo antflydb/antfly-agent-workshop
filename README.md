@@ -7,7 +7,7 @@ Build a support agent over a folder of documents in an hour. SearchAF extracts t
 - [starter/](guides/searchaf-agent/starter/): the support agent and two more apps over the same documents.
 - [tools/promote.mjs](tools/promote.mjs): finds the local engine, publishes what SearchAF indexed to a Cloud table, and runs the checks.
 
-Before the first prompt: install [SearchAF](https://searchaf.com) and add this repository's `guides/searchaf-agent/sample-data` folder during its setup (not on a Mac? serve `guides/searchaf-agent/atlas.aflite` with `antfly lite serve` instead; HANDOFF.md has the two lines); create an Antfly Cloud account, an instance, and an instance key; have an OpenAI API key and Node 22 or newer.
+Before the first prompt: install [SearchAF](https://searchaf.com) and add this repository's `guides/searchaf-agent/sample-data` folder during its setup (not on a Mac? serve the Antfly Lite copy of the documents with `antfly lite serve` instead; HANDOFF.md has the lines); create an Antfly Cloud account, an instance, and an instance key; have an OpenAI API key and Node 22 or newer.
 
 > Clone this repository and set up my .env.local.
 

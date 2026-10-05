@@ -14,7 +14,7 @@ The person has already done these, in the workshop:
 | Created an Antfly Cloud account, an instance, and an instance key | They put the instance URL and key in `.env.local` before the second prompt |
 | Has an OpenAI API key | They put it in `.env.local` before the first prompt |
 
-If the person is not on a Mac, SearchAF is out of the picture: they serve a prebuilt copy of the same documents with `antfly lite serve` instead, and tell you its address in the first prompt. See "Not on a Mac" at the end; the prompts are otherwise the same.
+If the person is not on a Mac, SearchAF is out of the picture: they serve a prebuilt copy of the same documents with `antfly lite serve` instead, and their first prompt says so. See "Not on a Mac" at the end; everything else is the same.
 
 Keys live only in `$HOME/antfly-workshop/.env.local`, which the person fills in themselves. Never print a key, repeat one in chat, or copy one into Git or the indexed folder. If a value you need is missing there, ask the person to add it and wait.
 
@@ -26,9 +26,10 @@ Before either prompt, the person asks you to clone this repository. Do that, the
 
 ```sh
 mkdir -p "$HOME/antfly-workshop" && cp <repo>/guides/searchaf-agent/starter/.env.example "$HOME/antfly-workshop/.env.local" && chmod 600 "$HOME/antfly-workshop/.env.local"
+cp <repo>/guides/searchaf-agent/atlas.aflite "$HOME/antfly-workshop/atlas.aflite"
 ```
 
-Tell them the paths of `.env.local` and of `<repo>/guides/searchaf-agent/sample-data`.
+Tell them the paths of `.env.local` and of `<repo>/guides/searchaf-agent/sample-data`. The `.aflite` copy is for a person without a Mac (see "Not on a Mac"); on a Mac it goes unused.
 
 ## Prompt 1: "Build the support agent from HANDOFF.md and run it locally"
 
@@ -118,14 +119,15 @@ The person quits SearchAF and asks the same three questions on the deployed Site
 
 ## Not on a Mac
 
-`guides/searchaf-agent/atlas.aflite` is an Antfly Lite database holding what SearchAF extracted from the seven sample files, with the same `files` table and full-text index. The person serves it on Linux (Windows through WSL) with the Antfly CLI, from the repository clone:
+`~/antfly-workshop/atlas.aflite` (copied from `guides/searchaf-agent/atlas.aflite` when you cloned) is an Antfly Lite database holding what SearchAF extracted from the seven sample files, with the same `files` table and full-text index. The person serves it on Linux (Windows through WSL) with the Antfly CLI:
 
 ```sh
+cd ~/antfly-workshop
 curl -L https://github.com/antflydb/antfly/releases/download/v0.2.5/antfly_0.2.5_Linux_x86_64.tar.gz | tar xz   # Linux_arm64 on ARM
-./antfly lite serve guides/searchaf-agent/atlas.aflite --addr 127.0.0.1:8080
+./antfly lite serve atlas.aflite --addr 127.0.0.1:8080
 ```
 
-and leaves it running. Their first prompt adds: "I am not on a Mac; the Atlas documents are served by antfly lite at http://127.0.0.1:8080." Then:
+and leaves it running. Their first prompt is then "Build the support agent from guides/searchaf-agent/HANDOFF.md and run it locally. I am not on a Mac; the Atlas documents are served by antfly lite at http://127.0.0.1:8080." Then:
 
 - There is nothing to wait for; the text is already extracted. Pass `--local http://127.0.0.1:8080` to `promote.mjs local`, `check-local`, and `publish`, and they use that engine instead of looking for SearchAF.
 - The Lite file has no embedder, so locally the app and the checks search by keyword only (`check-local` says so). On publish, Cloud gets the same document vector index SearchAF would have made and computes the vectors itself, so the deployed app is identical to the Mac path.
