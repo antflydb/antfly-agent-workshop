@@ -8,7 +8,8 @@ Everything here runs with Node 22 or newer. No Python.
 
 | When | What |
 |---|---|
-| Now | A Mac with [SearchAF](https://searchaf.com) installed, and an OpenAI API key |
+| Now | A Mac with [SearchAF](https://searchaf.com) installed, this repository cloned, and an OpenAI API key |
+| Now | The repository's `guides/searchaf-agent/sample-data` folder added in SearchAF (done during SearchAF's setup, before you start) |
 | After step 2 | An Antfly Cloud instance URL and an instance key (created during the session) |
 
 Keys go in private files outside the working copy, mode 600, never in Git or in the indexed folder.
@@ -17,22 +18,22 @@ Keys go in private files outside the working copy, mode 600, never in Git or in 
 
 ```sh
 mkdir -p "$HOME/antfly-workshop" && cd "$HOME/antfly-workshop"
-cp -R <repo>/guides/searchaf-agent/sample-data ./sample-data
 cp -R <repo>/guides/searchaf-agent/starter/site ./site
 cp <repo>/guides/searchaf-agent/corpus-checks.json <repo>/tools/promote.mjs .
+export SAMPLE="<repo>/guides/searchaf-agent/sample-data"
 ```
 
-The sample folder holds seven files: three Markdown notes, a PDF, two screenshots, and `untrusted-note.md`, which contains instructions the app must never follow.
+The documents stay where SearchAF is already watching them, in the repository. `$SAMPLE` holds seven files: three Markdown notes, a PDF, two screenshots, and `untrusted-note.md`, which contains instructions the app must never follow.
 
 ## 2. Index the folder with SearchAF
 
-Open SearchAF. On first run it downloads its models (a few GB, several minutes). In Settings, Folders, add `$HOME/antfly-workshop/sample-data` and nothing else. Wait until the folder shows as indexed, then check what was extracted:
+The person added `$SAMPLE` in SearchAF during its setup; you cannot add a folder yourself, there is no command or API for it. On a fresh install SearchAF first downloads its models (a few GB, several minutes), then indexes. Poll until the folder's text has been extracted:
 
 ```sh
-node promote.mjs check-local --root ./sample-data --checks ./corpus-checks.json
+node promote.mjs check-local --root "$SAMPLE" --checks ./corpus-checks.json
 ```
 
-All four checks pass when the PDF text and both screenshots' text have been read. If a file still shows "no text extracted yet", wait and rerun. This step needs nothing from Cloud, so it is the moment to create the Cloud account.
+All four checks pass when the PDF text and both screenshots' text have been read. If a file still shows "no text extracted yet", wait and rerun; if nothing appears after a few minutes, ask the person whether that folder shows under Settings, Folders in SearchAF, and to add it if not. This step needs nothing from Cloud, so it is the moment to create the Cloud account.
 
 **Stop here until you have the instance URL and key.** The person creates these in the Antfly Cloud dashboard: an account, an instance (takes about a minute to become ready), and an instance key. The URL looks like `https://platform.antfly.io/cloud/v1/<instance id>`.
 
@@ -40,7 +41,7 @@ All four checks pass when the PDF text and both screenshots' text have been read
 
 ```sh
 export ANTFLY_CLOUD_API_KEY_FILE="$HOME/.antfly-workshop-key"   # the instance key, one line
-node promote.mjs publish --root ./sample-data --instance "<instance url>" --table atlas_workshop
+node promote.mjs publish --root "$SAMPLE" --instance "<instance url>" --table atlas_workshop
 node promote.mjs check --instance "<instance url>" --table atlas_workshop --checks ./corpus-checks.json
 ```
 
