@@ -29,6 +29,6 @@ test('citation validation and missing evidence fail closed', async () => {
     fake('An unsupported confident answer', false);
     assert.match((await answerQuestion('question',config)).answer, /could not find supporting evidence/);
     fake('No citation in this answer', true);
-    assert.match((await answerQuestion('question',config)).answer, /could not be verified/);
+    assert.match((await answerQuestion('question',config)).answer, /do not provide enough evidence/);
   } finally { globalThis.fetch = original; }
 });

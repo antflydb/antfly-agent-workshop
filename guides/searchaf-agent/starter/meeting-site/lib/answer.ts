@@ -58,6 +58,6 @@ export async function answerQuestion(question: string, config: AnswerConfig): Pr
   if (cited.some(id => !sources.some(s=>s.id===id))) throw new Error('The answer included an unverified citation. Please try again.');
   if (!sources.length) return { answer: 'I could not find supporting evidence in the connected files. Try a different phrase or verify that the configured corpus contains the relevant document.', sources: [], cited: [], retrieved: 0 };
   // A sourced answer must be auditable; fail closed instead of presenting unsupported prose.
-  if (!cited.length) return { answer: 'Antfly found related passages, but the answer could not be verified with citations. Review the retrieved sources or ask a more specific question.', sources, cited: [], retrieved: sources.length };
+  if (!cited.length) return { answer: 'The files do not provide enough evidence to answer this. Antfly returned related passages, listed below, but none of them was cited, so no answer is shown.', sources, cited: [], retrieved: sources.length };
   return { answer, sources, cited, retrieved: sources.length };
 }

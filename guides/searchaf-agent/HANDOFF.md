@@ -48,11 +48,17 @@ node promote.mjs check --instance "<instance url>" --table atlas_workshop --chec
 
 ## 4. Run the app
 
+One `.env.local` at the working-copy root serves all three apps; each app reads `../.env.local`.
+
 ```sh
-cd site && cp ../<repo>/guides/searchaf-agent/starter/.env.example .env.local
+cp <repo>/guides/searchaf-agent/starter/.env.example .env.local
 # fill in OPENAI_API_KEY, ANTFLY_CLOUD_API_BASE, ANTFLY_CLOUD_TABLE=atlas_workshop, ANTFLY_CLOUD_API_KEY
-npm ci && npm test && npm run typecheck && npm run dev
+cd site && npm ci && npm test && npm run typecheck && npm run build
+node smoke-answer.mjs --question "When is the Project Atlas pilot launch, and for how many customers?" --expect "October 15"
+npm run dev
 ```
+
+The smoke script asks one question through the full path (search, model, citation check) without the browser; `passed: true` means the answer cited the Cloud rows. Then open the dev server in the browser. The app requires a ChatGPT sign-in; locally, `http://localhost:3000/signin-with-chatgpt?return_to=/` signs in a simulated user.
 
 Ask two questions and check the citations:
 
@@ -67,7 +73,12 @@ Deploy `site` as a private ChatGPT Site with the same four variables set server-
 
 ## 6. The other apps
 
-`starter/meeting-site` and `starter/handoff-site` use the same `lib/cloud.ts`, the same table, and the same four variables. Each has its own `npm test` and a smoke script in its README. Nothing is republished.
+Copy `starter/meeting-site` and `starter/handoff-site` next to `site`. They use the same `lib/cloud.ts`, the same table, and the same `.env.local`. Nothing is republished.
+
+```sh
+cd meeting-site && npm ci && npm test && node smoke-brief.mjs --topic "Atlas pilot launch readiness" --participants "Priya, Sam" --goal "decide go or no-go"
+cd ../handoff-site && npm ci && npm test && node smoke-handoff.mjs --project "Project Atlas" --recipient "the new support lead"
+```
 
 ## Before other people use the app
 
