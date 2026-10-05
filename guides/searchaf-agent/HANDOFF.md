@@ -2,7 +2,7 @@
 
 You are building a small app that answers questions from a folder of documents, with citations. SearchAF extracts the documents on the Mac and runs an Antfly engine there; the app searches that engine first. Then the extracted text is published to an Antfly Cloud table, the app is pointed at it and deployed as a ChatGPT Site, and the same app works with the Mac shut.
 
-The person gives you two prompts. Everything runs with Node 22 or newer; no Python.
+The person gives you two prompts. Everything runs with Node 22 or newer; no Python. The last step of the second prompt, deploying to ChatGPT Sites, requires Codex.
 
 ## Before the first prompt
 
@@ -102,6 +102,8 @@ ANTFLY_API_KEY=<instance key>
 Then, in `site`, `npm run build` and the same `smoke-answer.mjs` command as before. It should pass exactly as it did locally.
 
 ### Deploy the app
+
+This step requires Codex: it deploys to ChatGPT Sites through its own Sites integration, and nothing in this repository can. If you are another agent, stop here, tell the person the Cloud half is done, and hand them `site/` to deploy from ChatGPT themselves.
 
 Deploy `site` as a private ChatGPT Site named `atlas-support`, with the same five `.env.local` variables set as the Site's server-side secrets. On Sites those arrive as Worker bindings, which is why the API routes read `env` from `cloudflare:workers` rather than `process.env`. The build output is `dist/`; `.openai/hosting.json` records the Site's project id once it exists. Give the person the URL.
 
