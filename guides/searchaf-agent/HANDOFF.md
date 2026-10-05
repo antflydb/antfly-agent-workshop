@@ -11,19 +11,31 @@ The person has already done these, in the workshop:
 | Done | What you can rely on |
 |---|---|
 | Installed SearchAF and added this repository's `guides/searchaf-agent/sample-data` folder during its setup | SearchAF is indexing that folder. You cannot add a folder yourself; there is no command or API for it |
-| Created an Antfly Cloud account, an instance, and an instance key | They give you the instance URL and key with the second prompt |
-| Has an OpenAI API key | They give it to you with the first prompt |
+| Created an Antfly Cloud account, an instance, and an instance key | They put the instance URL and key in `.env.local` before the second prompt |
+| Has an OpenAI API key | They put it in `.env.local` before the first prompt |
 
-The person gives you keys in the prompt. Write them only into `$HOME/antfly-workshop/.env.local` (mode 600) and, for the publish step, a one-line key file. Never into Git, the indexed folder, or any file that is committed.
+Keys live only in `$HOME/antfly-workshop/.env.local`, which the person fills in themselves. Never print a key, repeat one in chat, or copy one into Git or the indexed folder. If a value you need is missing there, ask the person to add it and wait.
 
 `<repo>` below is this repository's clone.
 
+## When cloning
+
+Before either prompt, the person asks you to clone this repository. Do that, then create the file the person will fill in:
+
+```sh
+mkdir -p "$HOME/antfly-workshop" && cp <repo>/guides/searchaf-agent/starter/.env.example "$HOME/antfly-workshop/.env.local" && chmod 600 "$HOME/antfly-workshop/.env.local"
+```
+
+Tell them the paths of `.env.local` and of `<repo>/guides/searchaf-agent/sample-data`.
+
 ## Prompt 1: "Build the support agent from HANDOFF.md and run it locally"
+
+`OPENAI_API_KEY` is set in `.env.local` by now. If it is empty, ask the person to add it.
 
 ### Working copy
 
 ```sh
-mkdir -p "$HOME/antfly-workshop" && cd "$HOME/antfly-workshop"
+cd "$HOME/antfly-workshop"
 cp -R <repo>/guides/searchaf-agent/starter/site ./site
 cp <repo>/guides/searchaf-agent/corpus-checks.json <repo>/tools/promote.mjs .
 ```
@@ -44,17 +56,15 @@ All four checks pass when the PDF text and both screenshots' text have been read
 node promote.mjs local
 ```
 
-prints the three Antfly lines for the local engine (its port, table `files`, no key). Write `.env.local` from them:
+prints the three Antfly lines for the local engine (its port, table `files`, no key). Put them in `.env.local`, leaving the OpenAI lines as the person wrote them:
 
 ```
-OPENAI_API_KEY=<the person's key>
-OPENAI_MODEL=gpt-6-astra
 ANTFLY_API_BASE=http://127.0.0.1:<port>
 ANTFLY_TABLE=files
 ANTFLY_API_KEY=
 ```
 
-One `.env.local` at the working-copy root; the app reads `../.env.local`.
+The app reads `../.env.local`.
 
 ### Run it
 
@@ -74,32 +84,27 @@ The person asks three questions:
 
 The retrieval path is `lib/retrieval.ts`: one hybrid query (keyword and vector, fused by RRF), and every excerpt the model sees is a literal slice of a returned row. Nothing from Cloud is used yet.
 
-## Prompt 2: "Deploy everything to the cloud" (with the instance URL and key)
+## Prompt 2: "Deploy everything to the cloud"
 
 "Everything" is the engine and the app: the documents go to the person's Antfly Cloud instance, and `site` goes to ChatGPT Sites pointed at that instance. The other two starter apps are not part of this prompt.
 
+The person has replaced the local lines in `.env.local`: `ANTFLY_API_BASE` is now the instance URL (`https://platform.antfly.io/cloud/v1/<instance id>`) and `ANTFLY_API_KEY` the instance key. If either is missing or still local, ask them to set it and wait. Set `ANTFLY_TABLE=atlas_workshop` yourself.
+
 ### Publish the documents
+
+`promote.mjs` reads the instance URL and key from `.env.local` in the current directory.
 
 ```sh
 cd "$HOME/antfly-workshop"
-export ANTFLY_API_KEY_FILE="$HOME/.antfly-workshop-key"   # write the instance key from the prompt there, one line, chmod 600
-node promote.mjs publish --root <repo>/guides/searchaf-agent/sample-data --instance "<instance url>" --table atlas_workshop
-node promote.mjs check --instance "<instance url>" --table atlas_workshop --checks ./corpus-checks.json
+node promote.mjs publish --root <repo>/guides/searchaf-agent/sample-data --table atlas_workshop
+node promote.mjs check --table atlas_workshop --checks ./corpus-checks.json
 ```
 
-The instance URL looks like `https://platform.antfly.io/cloud/v1/<instance id>`. `publish` creates the table with the same indexes SearchAF used locally (full text plus document vectors on the same embedding model), copies the extracted text and image captions, and leaves the Mac's paths behind. Cloud computes the vectors itself. Run it again with `--recreate` after changing the documents. `check` runs the same four queries against Cloud; they pass when the Cloud copy answers like the local one.
+`publish` creates the table with the same indexes SearchAF used locally (full text plus document vectors on the same embedding model), copies the extracted text and image captions, and leaves the Mac's paths behind. Cloud computes the vectors itself. Run it again with `--recreate` after changing the documents. `check` runs the same four queries against Cloud; they pass when the Cloud copy answers like the local one.
 
 ### Point the app at Cloud
 
-Change the three Antfly lines in `.env.local`; the OpenAI lines stay:
-
-```
-ANTFLY_API_BASE=<instance url>
-ANTFLY_TABLE=atlas_workshop
-ANTFLY_API_KEY=<instance key>
-```
-
-Then, in `site`, `npm run build` and the same `smoke-answer.mjs` command as before. It should pass exactly as it did locally.
+`.env.local` already points at Cloud. In `site`, `npm run build` and the same `smoke-answer.mjs` command as before. It should pass exactly as it did locally.
 
 ### Deploy the app
 

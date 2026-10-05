@@ -9,6 +9,12 @@ Build a support agent over a folder of documents in an hour. SearchAF extracts t
 
 Before the first prompt: install [SearchAF](https://searchaf.com) and add this repository's `guides/searchaf-agent/sample-data` folder during its setup; create an Antfly Cloud account, an instance, and an instance key; have an OpenAI API key and Node 22 or newer.
 
-> Build the support agent from guides/searchaf-agent/HANDOFF.md and run it locally. My OpenAI API key is in ~/.antfly-workshop-openai-key.
+> Clone this repository and set up my .env.local.
 
-> Deploy everything to the cloud. My instance URL is <url> and the instance key is in ~/.antfly-workshop-key.
+Then put your OpenAI API key in `~/antfly-workshop/.env.local` and:
+
+> Build the support agent from guides/searchaf-agent/HANDOFF.md and run it locally.
+
+Then put your instance URL and key in the same file and:
+
+> Deploy everything to the cloud.

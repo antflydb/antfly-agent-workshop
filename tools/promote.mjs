@@ -10,12 +10,13 @@
 //   node tools/promote.mjs check       --instance <url> --table <name> --checks ./corpus-checks.json
 //
 // <url> is the instance's API base: https://platform.antfly.io/cloud/v1/<instance id>.
-// The key comes from ANTFLY_API_KEY, or from the file named by ANTFLY_API_KEY_FILE.
+// The key and instance come from ./.env.local when it is there (the app's file),
+// or from ANTFLY_API_KEY / ANTFLY_API_KEY_FILE and --instance.
 // Document keys are each file's path relative to --root.
 import fs from "node:fs";
 import os from "node:os";
 import path from "node:path";
-import { parseArgs } from "node:util";
+import { parseArgs, parseEnv } from "node:util";
 
 const { values: args, positionals } = parseArgs({
   allowPositionals: true,
@@ -40,11 +41,22 @@ function fail(message) {
   process.exit(1);
 }
 
+// The same file the app reads, when the tool runs from the working-copy root.
+const envFile = fs.existsSync(".env.local") ? parseEnv(fs.readFileSync(".env.local", "utf8")) : {};
+
 function cloudKey() {
   if (process.env.ANTFLY_API_KEY) return process.env.ANTFLY_API_KEY.trim();
   const file = process.env.ANTFLY_API_KEY_FILE;
   if (file) return fs.readFileSync(file, "utf8").trim();
-  fail("set ANTFLY_API_KEY, or ANTFLY_API_KEY_FILE to a file holding the key");
+  if (envFile.ANTFLY_API_KEY) return envFile.ANTFLY_API_KEY.trim();
+  fail("put the instance key in .env.local as ANTFLY_API_KEY, or set ANTFLY_API_KEY / ANTFLY_API_KEY_FILE");
+}
+
+function instance() {
+  const value = args.instance || envFile.ANTFLY_API_BASE || "";
+  if (!/^https:\/\/platform\.antfly\.io\/cloud\/v1\/[0-9a-f-]{36}$/.test(value.replace(/\/$/, "")))
+    fail("set ANTFLY_API_BASE in .env.local to the instance URL (https://platform.antfly.io/cloud/v1/<instance id>), or pass --instance");
+  return value.replace(/\/$/, "");
 }
 
 // SearchAF writes where its Antfly is listening each time it starts.
@@ -154,10 +166,10 @@ const LOCAL_ONLY = new Set([
 
 async function publish() {
   const root = path.resolve(need("root"));
-  const instance = need("instance").replace(/\/$/, "");
+  const cloudBase = instance();
   const table = need("table");
   const key = cloudKey();
-  const cloud = `${instance}/db/v1`;
+  const cloud = `${cloudBase}/db/v1`;
   const { files, rows } = await localRows(root);
   if (rows.length === 0) fail(`SearchAF has not indexed anything under ${root}; add the folder in SearchAF and wait for it`);
 
@@ -194,10 +206,10 @@ async function publish() {
 }
 
 async function check() {
-  const instance = need("instance").replace(/\/$/, "");
+  const cloudBase = instance();
   const table = need("table");
   const key = cloudKey();
-  const cloud = `${instance}/db/v1`;
+  const cloud = `${cloudBase}/db/v1`;
   const count = await call(cloud, "POST", `/tables/${table}/query`, {
     full_text_search: { match_all: {} },
     fields: ["filename"],
