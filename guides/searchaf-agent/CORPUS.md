@@ -23,3 +23,19 @@ uv run --with reportlab --with pillow python guides/searchaf-agent/scripts/build
 ```
 
 Render and inspect the PDF and both images after regeneration, then rerun the checks. Update `corpus-checks.json` if source facts change.
+
+## atlas.aflite
+
+`atlas.aflite` next to this file is the same corpus for people without a Mac: an Antfly Lite database with the `files` table (SearchAF's schema), the full-text index, and the seven rows exactly as `promote.mjs publish` writes them to Cloud (relative paths, extracted text, captions, no vectors). `antfly lite serve atlas.aflite --addr 127.0.0.1:8080` serves it with the same `/db/v1` API as SearchAF's engine.
+
+To rebuild it after the documents change, with SearchAF holding the new extraction and the Antfly CLI (v0.2.5 or later) on the path:
+
+```sh
+cd guides/searchaf-agent && rm -f atlas.aflite && antfly lite init atlas.aflite
+antfly lite serve atlas.aflite --addr 127.0.0.1:8777 &
+cd ../.. && node tools/promote.mjs publish --root guides/searchaf-agent/sample-data --instance http://127.0.0.1:8777 --table files --no-vectors
+node tools/promote.mjs check --instance http://127.0.0.1:8777 --table files --checks guides/searchaf-agent/corpus-checks.json
+kill %1 && antfly lite vacuum guides/searchaf-agent/atlas.aflite
+```
+
+`publish` to a loopback address needs no key and, with `--no-vectors`, creates the table with SearchAF's schema and only the full-text index.
