@@ -6,15 +6,28 @@ import type { Source } from './answer.ts';
 const matchFields = ['filename', 'filename_tokens', 'content', 'ocr_text', 'caption'];
 const fields = ['filename', 'content'];
 
-export function retrievalQuery(query: string, limit = 6) {
+// Keyword search always; the vector arm joins when the table has document
+// vectors (SearchAF's engine and Cloud do, an Antfly Lite file does not).
+export function retrievalQuery(query: string, limit = 6, vectors = true) {
   return {
     full_text_search: { disjuncts: matchFields.flatMap(field => [{ match: query, field }, ...(query.includes(' ') ? [{ match_phrase: query, field }] : [])]) },
-    semantic_search: query,
-    indexes: ['document_vectors'],
-    merge_config: { strategy: 'rrf', rank_constant: 60 },
+    ...(vectors ? { semantic_search: query, indexes: ['document_vectors'], merge_config: { strategy: 'rrf', rank_constant: 60 } } : {}),
     fields,
     limit,
   };
+}
+
+const vectorsByTable = new Map<string, Promise<boolean>>();
+function hasVectors(config: AnswerConfig): Promise<boolean> {
+  const key = `${config.apiBase}/${config.table}`;
+  let known = vectorsByTable.get(key);
+  if (!known) {
+    known = fetch(`${config.apiBase}/db/v1/tables/${config.table}`, { headers: config.apiKey ? { Authorization: `ApiKey ${config.apiKey}` } : {}, signal: AbortSignal.timeout(10_000) })
+      .then(async r => r.ok && 'document_vectors' in (((await r.json()) as {indexes?: Record<string, unknown>}).indexes ?? {}))
+      .catch(() => true);
+    vectorsByTable.set(key, known);
+  }
+  return known;
 }
 
 export async function searchDocuments(query: string, config: AnswerConfig): Promise<Source[]> {
@@ -22,7 +35,7 @@ export async function searchDocuments(query: string, config: AnswerConfig): Prom
   try {
     response = await fetch(`${config.apiBase}/db/v1/tables/${config.table}/query`, {
       method: 'POST', headers: { ...(config.apiKey ? { Authorization: `ApiKey ${config.apiKey}` } : {}), 'Content-Type': 'application/json' }, signal: AbortSignal.timeout(30_000),
-      body: JSON.stringify(retrievalQuery(query)),
+      body: JSON.stringify(retrievalQuery(query, 6, await hasVectors(config))),
     });
   } catch { throw new Error('Antfly retrieval is unavailable. Check ANTFLY_API_BASE and that the engine is running.'); }
   if (!response.ok) throw new Error('Antfly retrieval failed. Check the table name and the Antfly key.');
