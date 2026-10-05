@@ -2,7 +2,7 @@ import test from 'node:test';
 import assert from 'node:assert/strict';
 import { answerQuestion } from './answer.ts';
 
-const config = { key: 'test-fixture', model: 'test-model', apiBase: 'https://platform.antfly.io/cloud/v1/11111111-1111-1111-1111-111111111111', table: 'atlas_workshop', cloudKey: 'cloud-fixture' };
+const config = { key: 'test-fixture', model: 'test-model', apiBase: 'https://platform.antfly.io/cloud/v1/11111111-1111-1111-1111-111111111111', table: 'atlas_workshop', apiKey: 'cloud-fixture' };
 const row = { filename: 'Evidence.pdf', content: 'A supported fact.' };
 
 test('citation validation and missing evidence fail closed', async () => {

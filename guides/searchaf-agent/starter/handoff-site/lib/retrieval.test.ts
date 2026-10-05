@@ -1,22 +1,31 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import { configurationFromEnv, answerQuestion, runEvidenceResponse } from './answer.ts';
-import { searchCloud } from './cloud.ts';
-const config = {key:'openai-fixture-secret', model:'test-model', apiBase:'https://platform.antfly.io/cloud/v1/11111111-1111-1111-1111-111111111111', table:'atlas_workshop', cloudKey:'cloud-fixture-secret'};
+import { searchDocuments } from './retrieval.ts';
+const config = {key:'openai-fixture-secret', model:'test-model', apiBase:'https://platform.antfly.io/cloud/v1/11111111-1111-1111-1111-111111111111', table:'atlas_workshop', apiKey:'cloud-fixture-secret'};
 const row = {filename:'atlas-approved-plan.md', content:'Pilot launches October 15 for 25 customers.'};
 const hits = (source:unknown=row) => Response.json({responses:[{hits:{hits:[{_id:'atlas-approved-plan.md',_source:source}]}}]});
 test('configuration needs the OpenAI key, the instance, the table and the Antfly key', () => {
-  const env = {OPENAI_API_KEY:config.key, ANTFLY_CLOUD_API_BASE:config.apiBase, ANTFLY_CLOUD_TABLE:config.table, ANTFLY_CLOUD_API_KEY:config.cloudKey};
+  const env = {OPENAI_API_KEY:config.key, ANTFLY_API_BASE:config.apiBase, ANTFLY_TABLE:config.table, ANTFLY_API_KEY:config.apiKey};
   assert.deepEqual(configurationFromEnv(env), {...config,model:'gpt-6-astra'});
-  assert.throws(()=>configurationFromEnv({OPENAI_API_KEY:'fixture'}), /Configure the Cloud/);
-  assert.throws(()=>configurationFromEnv({...env,ANTFLY_CLOUD_API_BASE:'https://untrusted.example'}), /Configure the Cloud/);
-  assert.throws(()=>configurationFromEnv({...env,ANTFLY_CLOUD_TABLE:'../other'}), /Configure the Cloud/);
+  assert.throws(()=>configurationFromEnv({OPENAI_API_KEY:'fixture'}), /Configure the Antfly/);
+  assert.throws(()=>configurationFromEnv({...env,ANTFLY_API_BASE:'https://untrusted.example'}), /Configure the Antfly/);
+  assert.throws(()=>configurationFromEnv({...env,ANTFLY_TABLE:'../other'}), /Configure the Antfly/);
+  assert.throws(()=>configurationFromEnv({...env,ANTFLY_API_KEY:''}), /Configure the Antfly/);
+  const local = {...env, ANTFLY_API_BASE:'http://127.0.0.1:52341', ANTFLY_TABLE:'files', ANTFLY_API_KEY:''};
+  assert.deepEqual(configurationFromEnv(local), {...config, model:'gpt-6-astra', apiBase:'http://127.0.0.1:52341', table:'files', apiKey:''});
+});
+test('the local engine is queried without an Authorization header', async () => {
+  const original = fetch;
+  globalThis.fetch = async (_url,init) => { assert.equal((init?.headers as Record<string,string>).Authorization, undefined); return hits(); };
+  try { assert.equal((await searchDocuments('pilot', {...config, apiBase:'http://127.0.0.1:52341', table:'files', apiKey:''})).length, 1); }
+  finally { globalThis.fetch = original; }
 });
 test('Cloud requests run the hybrid query and turn rows into literal excerpts', async () => {
   const original = fetch;
   globalThis.fetch = async (url,init) => {
     assert.equal(url,config.apiBase+'/db/v1/tables/'+config.table+'/query');
-    assert.equal((init?.headers as Record<string,string>).Authorization,'ApiKey '+config.cloudKey);
+    assert.equal((init?.headers as Record<string,string>).Authorization,'ApiKey '+config.apiKey);
     const body = JSON.parse(String(init?.body));
     assert.equal(body.limit,6); assert.deepEqual(body.indexes,['document_vectors']);
     assert.deepEqual(body.merge_config,{strategy:'rrf',rank_constant:60});
@@ -25,20 +34,20 @@ test('Cloud requests run the hybrid query and turn rows into literal excerpts', 
     return hits();
   };
   try {
-    const first = await searchCloud('pilot',config), second = await searchCloud('pilot',config);
+    const first = await searchDocuments('pilot',config), second = await searchDocuments('pilot',config);
     assert.deepEqual(first,second); assert.equal(first[0].excerpt,row.content); assert.equal(first[0].title,row.filename); assert.match(first[0].id,/^S[a-f0-9]{12}$/);
     globalThis.fetch = async ()=>hits({...row,content:''});
-    assert.deepEqual(await searchCloud('pilot',config),[]);
+    assert.deepEqual(await searchDocuments('pilot',config),[]);
     for (const bad of [{...row,filename:null},{...row,filename:'x'.repeat(251)}]) {
       globalThis.fetch = async ()=>hits(bad);
-      await assert.rejects(searchCloud('pilot',config),/unexpected row/);
+      await assert.rejects(searchDocuments('pilot',config),/unexpected row/);
     }
     globalThis.fetch = async ()=>Response.json({responses:[{error:'failure',hits:{hits:[]}}]});
-    await assert.rejects(searchCloud('pilot',config),/did not complete/);
+    await assert.rejects(searchDocuments('pilot',config),/did not complete/);
     globalThis.fetch = async ()=>Response.json({responses:[{hits:{hits:'invalid'}}]});
-    await assert.rejects(searchCloud('pilot',config),/invalid retrieval/);
+    await assert.rejects(searchDocuments('pilot',config),/invalid retrieval/);
     globalThis.fetch = async ()=>new Response('cloud-fixture-secret',{status:403});
-    await assert.rejects(searchCloud('pilot',config),e=>e instanceof Error && !e.message.includes(config.cloudKey));
+    await assert.rejects(searchDocuments('pilot',config),e=>e instanceof Error && !e.message.includes(config.apiKey));
   } finally {globalThis.fetch=original;}
 });
 test('function loop replays reasoning, executes search on server and validates captured citations', async () => {
@@ -46,7 +55,7 @@ test('function loop replays reasoning, executes search on server and validates c
   globalThis.fetch = async (url,init) => {
     if (String(url).startsWith(config.apiBase)) {searched++;return hits();}
     const request=JSON.parse(String(init?.body));
-    assert.equal(request.store,false); assert.ok(!JSON.stringify(request).includes(config.cloudKey)); assert.ok(!JSON.stringify(request).includes(config.key));
+    assert.equal(request.store,false); assert.ok(!JSON.stringify(request).includes(config.apiKey)); assert.ok(!JSON.stringify(request).includes(config.key));
     assert.equal(request.tools[0].strict,true); assert.equal(request.parallel_tool_calls,false);
     responses++;
     if (responses===1) {

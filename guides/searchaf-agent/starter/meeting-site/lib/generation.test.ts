@@ -1,9 +1,9 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
-import {prepareHandoff} from './brief.ts';
+import {prepareBrief} from './brief.ts';
 import type {AnswerConfig} from './answer.ts';
-test('Cloud generation executes bounded retrieval and preserves structured output and evidence', async()=>{
- const config:AnswerConfig={key:'openai-fixture',model:'test-model',apiBase:'https://platform.antfly.io/cloud/v1/00000000-0000-0000-0000-000000000000',table:'atlas_workshop',cloudKey:'cloud-fixture'};
+test('Generation executes bounded retrieval and preserves structured output and evidence', async()=>{
+ const config:AnswerConfig={key:'openai-fixture',model:'test-model',apiBase:'https://platform.antfly.io/cloud/v1/00000000-0000-0000-0000-000000000000',table:'atlas_workshop',apiKey:'cloud-fixture'};
  const original=globalThis.fetch;let calls=0;let schema='';
  globalThis.fetch=async(url,init)=>{
   const request=JSON.parse(String(init?.body));
@@ -21,9 +21,9 @@ test('Cloud generation executes bounded retrieval and preserves structured outpu
   assert.equal(JSON.stringify(request.text),schema);
   const evidence=JSON.parse(request.input.find((x:{type:string})=>x.type==='function_call_output').output);
   const id=evidence.sources[0].id;
-  const result={title:'Atlas',background:[{text:'Approved launch date.',source_ids:[id]}],decisions:[],work:[],timeline:[],gaps:[],suggestions:[],reading:[{source_id:id,reason:'Approved plan'}]};
+  const result={title:'Atlas',context:[{text:'Approved launch date.',source_ids:[id]}],decisions:[],tensions:[],gaps:[],agenda:[{topic:'Launch',purpose:'Review',minutes:30,source_ids:[id]}],questions:[]};
   return Response.json({status:'completed',output:[{type:'message',content:[{type:'output_text',text:JSON.stringify(result)}]}]});
  };
- try {const result=await prepareHandoff({project:'Atlas',recipient:'',focus:''},config);assert.equal(result.status,'ready');assert.equal(result.sources[0].source,'Antfly Cloud');assert.equal(result.sources[0].excerpt,'Approved launch date.');assert.equal(calls,2);}
+ try {const result=await prepareBrief({topic:'Atlas',participants:'',goal:'',duration:30},config);assert.equal(result.status,'ready');assert.equal(result.sources[0].source,'Antfly');assert.equal(result.sources[0].excerpt,'Approved launch date.');assert.equal(calls,2);}
  finally {globalThis.fetch=original;}
 });

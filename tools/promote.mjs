@@ -4,17 +4,19 @@
 // this copies what it produced, rewrites your Mac's paths out of the rows, and
 // creates the same indexes on Cloud. No Python, no SearchAF settings changes.
 //
-//   node tools/promote.mjs check-local --root ./sample-data --checks ./corpus-checks.json
-//   node tools/promote.mjs publish     --root ./sample-data --instance <url> --table <name> [--recreate]
+//   node tools/promote.mjs local                                                  (where SearchAF's engine is, for .env.local)
+//   node tools/promote.mjs check-local --root <folder> --checks ./corpus-checks.json
+//   node tools/promote.mjs publish     --root <folder> --instance <url> --table <name> [--recreate]
 //   node tools/promote.mjs check       --instance <url> --table <name> --checks ./corpus-checks.json
 //
 // <url> is the instance's API base: https://platform.antfly.io/cloud/v1/<instance id>.
-// The key comes from ANTFLY_CLOUD_API_KEY, or from the file named by ANTFLY_CLOUD_API_KEY_FILE.
+// The key and instance come from ./.env.local when it is there (the app's file),
+// or from ANTFLY_API_KEY / ANTFLY_API_KEY_FILE and --instance.
 // Document keys are each file's path relative to --root.
 import fs from "node:fs";
 import os from "node:os";
 import path from "node:path";
-import { parseArgs } from "node:util";
+import { parseArgs, parseEnv } from "node:util";
 
 const { values: args, positionals } = parseArgs({
   allowPositionals: true,
@@ -39,11 +41,22 @@ function fail(message) {
   process.exit(1);
 }
 
+// The same file the app reads, when the tool runs from the working-copy root.
+const envFile = fs.existsSync(".env.local") ? parseEnv(fs.readFileSync(".env.local", "utf8")) : {};
+
 function cloudKey() {
-  if (process.env.ANTFLY_CLOUD_API_KEY) return process.env.ANTFLY_CLOUD_API_KEY.trim();
-  const file = process.env.ANTFLY_CLOUD_API_KEY_FILE;
+  if (process.env.ANTFLY_API_KEY) return process.env.ANTFLY_API_KEY.trim();
+  const file = process.env.ANTFLY_API_KEY_FILE;
   if (file) return fs.readFileSync(file, "utf8").trim();
-  fail("set ANTFLY_CLOUD_API_KEY, or ANTFLY_CLOUD_API_KEY_FILE to a file holding the key");
+  if (envFile.ANTFLY_API_KEY) return envFile.ANTFLY_API_KEY.trim();
+  fail("put the instance key in .env.local as ANTFLY_API_KEY, or set ANTFLY_API_KEY / ANTFLY_API_KEY_FILE");
+}
+
+function instance() {
+  const value = args.instance || envFile.ANTFLY_API_BASE || "";
+  if (!/^https:\/\/platform\.antfly\.io\/cloud\/v1\/[0-9a-f-]{36}$/.test(value.replace(/\/$/, "")))
+    fail("set ANTFLY_API_BASE in .env.local to the instance URL (https://platform.antfly.io/cloud/v1/<instance id>), or pass --instance");
+  return value.replace(/\/$/, "");
 }
 
 // SearchAF writes where its Antfly is listening each time it starts.
@@ -153,10 +166,10 @@ const LOCAL_ONLY = new Set([
 
 async function publish() {
   const root = path.resolve(need("root"));
-  const instance = need("instance").replace(/\/$/, "");
+  const cloudBase = instance();
   const table = need("table");
   const key = cloudKey();
-  const cloud = `${instance}/db/v1`;
+  const cloud = `${cloudBase}/db/v1`;
   const { files, rows } = await localRows(root);
   if (rows.length === 0) fail(`SearchAF has not indexed anything under ${root}; add the folder in SearchAF and wait for it`);
 
@@ -193,10 +206,10 @@ async function publish() {
 }
 
 async function check() {
-  const instance = need("instance").replace(/\/$/, "");
+  const cloudBase = instance();
   const table = need("table");
   const key = cloudKey();
-  const cloud = `${instance}/db/v1`;
+  const cloud = `${cloudBase}/db/v1`;
   const count = await call(cloud, "POST", `/tables/${table}/query`, {
     full_text_search: { match_all: {} },
     fields: ["filename"],
@@ -210,6 +223,12 @@ async function check() {
   });
 }
 
-const commands = { "check-local": checkLocal, publish, check };
-if (!commands[command]) fail(`usage: promote.mjs <check-local|publish|check> ...\n${fs.readFileSync(new URL(import.meta.url), "utf8").split("\n").slice(1, 12).join("\n")}`);
+// The app takes the engine without /db/v1 and adds it per request.
+function local() {
+  const base = localBase().replace(/\/db\/v1$/, "");
+  console.log(`ANTFLY_API_BASE=${base}\nANTFLY_TABLE=files\nANTFLY_API_KEY=`);
+}
+
+const commands = { local, "check-local": checkLocal, publish, check };
+if (!commands[command]) fail(`usage: promote.mjs <local|check-local|publish|check> ...\n${fs.readFileSync(new URL(import.meta.url), "utf8").split("\n").slice(1, 13).join("\n")}`);
 await commands[command]();

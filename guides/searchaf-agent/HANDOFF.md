@@ -1,93 +1,127 @@
 # Handoff: build the support agent
 
-You are building a small app that answers questions from a folder of documents, with citations. SearchAF extracts the documents on the Mac, the extracted text moves to an Antfly Cloud table, and the app searches that table from wherever it runs. The same table then serves two more apps.
+You are building a small app that answers questions from a folder of documents, with citations. SearchAF extracts the documents on the Mac and runs an Antfly engine there; the app searches that engine first. Then the extracted text is published to an Antfly Cloud table, the app is pointed at it and deployed as a ChatGPT Site, and the same app works with the Mac shut.
 
-Everything here runs with Node 22 or newer. No Python.
+The person gives you two prompts. Everything runs with Node 22 or newer; no Python. The last step of the second prompt, deploying to ChatGPT Sites, requires Codex.
 
-## What the person provides
+## Before the first prompt
 
-| When | What |
+The person has already done these, in the workshop:
+
+| Done | What you can rely on |
 |---|---|
-| Now | A Mac with [SearchAF](https://searchaf.com) installed, and an OpenAI API key |
-| After step 2 | An Antfly Cloud instance URL and an instance key (created during the session) |
+| Installed SearchAF and added this repository's `guides/searchaf-agent/sample-data` folder during its setup | SearchAF is indexing that folder. You cannot add a folder yourself; there is no command or API for it |
+| Created an Antfly Cloud account, an instance, and an instance key | They put the instance URL and key in `.env.local` before the second prompt |
+| Has an OpenAI API key | They put it in `.env.local` before the first prompt |
 
-Keys go in private files outside the working copy, mode 600, never in Git or in the indexed folder.
+Keys live only in `$HOME/antfly-workshop/.env.local`, which the person fills in themselves. Never print a key, repeat one in chat, or copy one into Git or the indexed folder. If a value you need is missing there, ask the person to add it and wait.
 
-## 1. Set up the working copy
+`<repo>` below is this repository's clone.
+
+## When cloning
+
+Before either prompt, the person asks you to clone this repository. Do that, then create the file the person will fill in:
 
 ```sh
-mkdir -p "$HOME/antfly-workshop" && cd "$HOME/antfly-workshop"
-cp -R <repo>/guides/searchaf-agent/sample-data ./sample-data
+mkdir -p "$HOME/antfly-workshop" && cp <repo>/guides/searchaf-agent/starter/.env.example "$HOME/antfly-workshop/.env.local" && chmod 600 "$HOME/antfly-workshop/.env.local"
+```
+
+Tell them the paths of `.env.local` and of `<repo>/guides/searchaf-agent/sample-data`.
+
+## Prompt 1: "Build the support agent from HANDOFF.md and run it locally"
+
+`OPENAI_API_KEY` is set in `.env.local` by now. If it is empty, ask the person to add it.
+
+### Working copy
+
+```sh
+cd "$HOME/antfly-workshop"
 cp -R <repo>/guides/searchaf-agent/starter/site ./site
 cp <repo>/guides/searchaf-agent/corpus-checks.json <repo>/tools/promote.mjs .
 ```
 
-The sample folder holds seven files: three Markdown notes, a PDF, two screenshots, and `untrusted-note.md`, which contains instructions the app must never follow.
+The documents stay in the repository, where SearchAF is watching them: seven files, three Markdown notes, a PDF, two screenshots, and `untrusted-note.md`, which contains instructions the app must never follow.
 
-## 2. Index the folder with SearchAF
-
-Open SearchAF. On first run it downloads its models (a few GB, several minutes). In Settings, Folders, add `$HOME/antfly-workshop/sample-data` and nothing else. Wait until the folder shows as indexed, then check what was extracted:
+### Wait for extraction
 
 ```sh
-node promote.mjs check-local --root ./sample-data --checks ./corpus-checks.json
+node promote.mjs check-local --root <repo>/guides/searchaf-agent/sample-data --checks ./corpus-checks.json
 ```
 
-All four checks pass when the PDF text and both screenshots' text have been read. If a file still shows "no text extracted yet", wait and rerun. This step needs nothing from Cloud, so it is the moment to create the Cloud account.
+All four checks pass when the PDF text and both screenshots' text have been read. On a fresh install SearchAF first downloads its models (a few GB, several minutes), then indexes. If a file shows "no text extracted yet", wait and rerun. If nothing appears after a few minutes, ask the person whether the folder shows under Settings, Folders in SearchAF.
 
-**Stop here until you have the instance URL and key.** The person creates these in the Antfly Cloud dashboard: an account, an instance (takes about a minute to become ready), and an instance key. The URL looks like `https://platform.antfly.io/cloud/v1/<instance id>`.
-
-## 3. Publish to Cloud
+### Configure against the engine on this Mac
 
 ```sh
-export ANTFLY_CLOUD_API_KEY_FILE="$HOME/.antfly-workshop-key"   # the instance key, one line
-node promote.mjs publish --root ./sample-data --instance "<instance url>" --table atlas_workshop
-node promote.mjs check --instance "<instance url>" --table atlas_workshop --checks ./corpus-checks.json
+node promote.mjs local
 ```
 
-`publish` creates the table with the same indexes SearchAF used locally (full text plus document vectors on the same embedding model), copies the extracted text and image captions, and leaves your Mac's paths behind. Cloud computes the vectors itself. Run it again with `--recreate` after changing the documents. `check` runs the same four queries against Cloud; they pass when the Cloud copy answers like the local one.
+prints the three Antfly lines for the local engine (its port, table `files`, no key). Put them in `.env.local`, leaving the OpenAI lines as the person wrote them:
 
-## 4. Run the app
+```
+ANTFLY_API_BASE=http://127.0.0.1:<port>
+ANTFLY_TABLE=files
+ANTFLY_API_KEY=
+```
 
-One `.env.local` at the working-copy root serves all three apps; each app reads `../.env.local`.
+The app reads `../.env.local`.
+
+### Run it
 
 ```sh
-cp <repo>/guides/searchaf-agent/starter/.env.example .env.local
-# fill in OPENAI_API_KEY, ANTFLY_CLOUD_API_BASE, ANTFLY_CLOUD_TABLE=atlas_workshop, ANTFLY_CLOUD_API_KEY
-# (the key's value, not the path of the file that holds it)
 cd site && npm ci && npm test && npm run typecheck && npm run build
 node smoke-answer.mjs --question "When is the Project Atlas pilot launch, and for how many customers?" --expect "October 15"
 npm run dev
 ```
 
-The smoke script asks one question through the full path (search, model, citation check) without the browser; `passed: true` means the answer cited the Cloud rows. Then open the dev server in the browser. The app requires a ChatGPT sign-in; locally, `http://localhost:3000/signin-with-chatgpt?return_to=/` signs in a simulated user.
+The smoke script asks one question through the full path (search, model, citation check) without the browser; `passed: true` means the answer cited rows from the engine. Then give the person the dev server URL. The app requires a ChatGPT sign-in; locally, `/signin-with-chatgpt?return_to=/` on the dev server signs in a simulated user.
 
-Ask two questions and check the citations:
+The person asks three questions:
 
 - "When is the Project Atlas pilot launch, and for how many customers?" Expect October 15, 2026 and 25 invited customers, cited to `atlas-approved-plan.md`, not the draft.
 - "What should support tell a customer who sees ATLAS-403?" Expect sign out, then sign in, cited to the PDF.
+- "What is the approved Project Atlas budget?" No budget was approved, so the app must say the files do not establish one rather than guess.
 
-Then ask "What does the Atlas pilot cost per seat?" The files say nothing about pricing, so the app must say they do not provide enough evidence rather than guess. The retrieval path is `lib/cloud.ts`: one hybrid query (keyword and vector, fused by RRF), and every excerpt the model sees is a literal slice of a returned row.
+The retrieval path is `lib/retrieval.ts`: one hybrid query (keyword and vector, fused by RRF), and every excerpt the model sees is a literal slice of a returned row. Nothing from Cloud is used yet.
 
-## 5. Deploy
+## Prompt 2: "Deploy everything to the cloud"
 
-Deploy `site` as a private ChatGPT Site named `atlas-support`, with the same four variables set as the Site's server-side secrets. On Sites those arrive as Worker bindings, which is why the API routes read `env` from `cloudflare:workers` rather than `process.env`. Quit SearchAF, then ask the step 4 questions against the deployed URL; if the page looks stale after a redeploy, hard refresh. The deployed app must not depend on the Mac.
+"Everything" is the engine and the app: the documents go to the person's Antfly Cloud instance, and `site` goes to ChatGPT Sites pointed at that instance. The other two starter apps are not part of this prompt.
 
-## 6. The other apps
+The person has replaced the local lines in `.env.local`: `ANTFLY_API_BASE` is now the instance URL (`https://platform.antfly.io/cloud/v1/<instance id>`) and `ANTFLY_API_KEY` the instance key. If either is missing or still local, ask them to set it and wait. Set `ANTFLY_TABLE=atlas_workshop` yourself.
 
-Copy `starter/meeting-site` and `starter/handoff-site` next to `site`. They use the same `lib/cloud.ts`, the same table, and the same `.env.local`. Nothing is republished.
+### Publish the documents
+
+`promote.mjs` reads the instance URL and key from `.env.local` in the current directory.
 
 ```sh
-cd meeting-site && npm ci && npm test && node smoke-brief.mjs --topic "Atlas pilot launch readiness" --participants "Priya, Sam" --goal "decide go or no-go"
-cd ../handoff-site && npm ci && npm test && node smoke-handoff.mjs --project "Project Atlas" --recipient "the new support lead"
+cd "$HOME/antfly-workshop"
+node promote.mjs publish --root <repo>/guides/searchaf-agent/sample-data --table atlas_workshop
+node promote.mjs check --table atlas_workshop --checks ./corpus-checks.json
 ```
 
-## Before other people use the app
+`publish` creates the table with the same indexes SearchAF used locally (full text plus document vectors on the same embedding model), copies the extracted text and image captions, and leaves the Mac's paths behind. Cloud computes the vectors itself. Run it again with `--recreate` after changing the documents. `check` runs the same four queries against Cloud; they pass when the Cloud copy answers like the local one.
 
-Replace the instance key in the deployed app with a read-only key granted on `atlas_workshop` only, created in the dashboard. The instance key can create and delete tables; the app only ever needs to read one.
+### Point the app at Cloud
+
+`.env.local` already points at Cloud. In `site`, `npm run build` and the same `smoke-answer.mjs` command as before. It should pass exactly as it did locally.
+
+### Deploy the app
+
+This step requires Codex: it deploys to ChatGPT Sites through its own Sites integration, and nothing in this repository can. If you are another agent, stop here, tell the person the Cloud half is done, and hand them `site/` to deploy from ChatGPT themselves.
+
+Deploy `site` as a private ChatGPT Site named `atlas-support`, with the same five `.env.local` variables set as the Site's server-side secrets. On Sites those arrive as Worker bindings, which is why the API routes read `env` from `cloudflare:workers` rather than `process.env`. The build output is `dist/`; `.openai/hosting.json` records the Site's project id once it exists. Give the person the URL.
+
+The person quits SearchAF and asks the same three questions on the deployed Site. If the page looks stale after a redeploy, hard refresh.
+
+## Afterward
+
+- `starter/meeting-site` and `starter/handoff-site` use the same `lib/retrieval.ts`, the same table, and the same `.env.local`, copied next to `site`. Each has `npm test` and a smoke script (`smoke-brief.mjs --topic ...`, `smoke-handoff.mjs --project ...`).
+- Before other people use the deployed app, replace the instance key with a read-only API key granted on `atlas_workshop` only, created in the dashboard. The instance key can create and delete tables; the app only ever needs to read one. (A browser key is a different thing; the app's key stays server-side.)
 
 ## Things the platform will do to you
 
 - `platform.antfly.io` returns Cloudflare error 1010 to Python's `urllib`. Node `fetch` and `curl` are fine.
 - Hybrid queries take `merge_config: {"strategy": "rrf"}`; `merge_strategy` is rejected. Responses arrive as `responses[0].hits.hits`.
-- An admin instance key works on `/db/v1` routes only. Creating keys or enabling browser access needs the dashboard.
+- The instance key works on `/db/v1` routes only. Creating keys or enabling browser access needs the dashboard.
 - The reranker may report "temporarily unavailable"; the app does not use it.
