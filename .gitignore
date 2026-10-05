@@ -12,3 +12,4 @@
 **/*.private.json
 *.zip
 .DS_Store
+**/*.aflite.lock

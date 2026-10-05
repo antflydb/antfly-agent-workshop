@@ -4,7 +4,7 @@
 // this copies what it produced, rewrites your Mac's paths out of the rows, and
 // creates the same indexes on Cloud. No Python, no SearchAF settings changes.
 //
-//   node tools/promote.mjs local                                                  (where SearchAF's engine is, for .env.local)
+//   node tools/promote.mjs local [--local http://127.0.0.1:8080]                 (the engine's lines for .env.local)
 //   node tools/promote.mjs check-local --root <folder> --checks ./corpus-checks.json
 //   node tools/promote.mjs publish     --root <folder> --instance <url> --table <name> [--recreate]
 //   node tools/promote.mjs check       --instance <url> --table <name> --checks ./corpus-checks.json
@@ -27,6 +27,7 @@ const { values: args, positionals } = parseArgs({
     checks: { type: "string" },
     local: { type: "string" },
     recreate: { type: "boolean", default: false },
+    "no-vectors": { type: "boolean", default: false },
   },
 });
 const command = positionals[0];
@@ -52,16 +53,22 @@ function cloudKey() {
   fail("put the instance key in .env.local as ANTFLY_API_KEY, or set ANTFLY_API_KEY / ANTFLY_API_KEY_FILE");
 }
 
+// A loopback target (an `antfly lite serve` address) needs no key; that is
+// how guides/searchaf-agent/atlas.aflite is built.
+function isLoopback(url) {
+  return /^http:\/\/(127\.0\.0\.1|localhost):\d+$/.test(url);
+}
+
 function instance() {
-  const value = args.instance || envFile.ANTFLY_API_BASE || "";
-  if (!/^https:\/\/platform\.antfly\.io\/cloud\/v1\/[0-9a-f-]{36}$/.test(value.replace(/\/$/, "")))
+  const value = (args.instance || envFile.ANTFLY_API_BASE || "").replace(/\/$/, "");
+  if (!isLoopback(value) && !/^https:\/\/platform\.antfly\.io\/cloud\/v1\/[0-9a-f-]{36}$/.test(value))
     fail("set ANTFLY_API_BASE in .env.local to the instance URL (https://platform.antfly.io/cloud/v1/<instance id>), or pass --instance");
-  return value.replace(/\/$/, "");
+  return value;
 }
 
 // SearchAF writes where its Antfly is listening each time it starts.
 function localBase() {
-  if (args.local) return args.local.replace(/\/$/, "");
+  if (args.local) return `${args.local.replace(/\/$/, "").replace(/\/db\/v1$/, "")}/db/v1`;
   const owner = path.join(os.homedir(), ".searchaf", "state", "swarm-owner.json");
   try {
     const { port } = JSON.parse(fs.readFileSync(owner, "utf8"));
@@ -88,7 +95,10 @@ async function call(base, method, route, body, key) {
 // The text fields SearchAF fills for every file.
 const TEXT_FIELDS = ["filename", "filename_tokens", "content", "ocr_text", "caption"];
 
-function hybridQuery(query, limit) {
+// A Lite file served with `antfly lite serve` has no embedder, so it is
+// searched by keyword only; SearchAF's engine and Cloud have document vectors.
+function hybridQuery(query, limit, vectors = true) {
+  if (!vectors) return { full_text_search: hybridQuery(query, limit).full_text_search, fields: ["filename", "content"], limit };
   return {
     full_text_search: {
       disjuncts: TEXT_FIELDS.flatMap((field) => [
@@ -113,10 +123,17 @@ async function localRows(root) {
     full_text_search: { match_all: {} },
     limit: 10000,
   });
+  // SearchAF rows carry the Mac's absolute paths; rows in a hosted Lite file
+  // are already relative, so they all belong to the folder.
   const rows = all.responses[0].hits.hits
     .map((h) => h._source)
-    .filter((r) => typeof r.path === "string" && r.path.startsWith(`${root}${path.sep}`));
-  return { files, rows, base };
+    .filter((r) => typeof r.path === "string" && (!path.isAbsolute(r.path) || r.path.startsWith(`${root}${path.sep}`)));
+  const vectors = "document_vectors" in (files.indexes ?? {});
+  return { files, rows, base, vectors };
+}
+
+function relativePath(root, p) {
+  return path.isAbsolute(p) ? path.relative(root, p) : p;
 }
 
 // Runs the known-answer checks: the named file must come back in the top
@@ -145,18 +162,29 @@ async function runChecks(checksPath, search) {
 
 async function checkLocal() {
   const root = path.resolve(need("root"));
-  const { rows, base } = await localRows(root);
-  console.log(`SearchAF has indexed ${rows.length} files under ${root}`);
+  const { rows, base, vectors } = await localRows(root);
+  console.log(`the local engine has ${rows.length} files for ${root}${vectors ? "" : " (keyword search only)"}`);
   const nameOnly = rows.filter((r) => `${r.content ?? ""}`.trim() === "");
-  for (const r of nameOnly) console.log(`  no text extracted yet: ${path.relative(root, r.path)} (${r.file_type})`);
+  for (const r of nameOnly) console.log(`  no text extracted yet: ${relativePath(root, r.path)} (${r.file_type})`);
   await runChecks(need("checks"), async (query) => {
     const r = await call(base, "POST", "/tables/files/query", {
-      ...hybridQuery(query, 40),
+      ...hybridQuery(query, 40, vectors),
       fields: ["filename", "content", "path"],
     });
-    return r.responses[0].hits.hits.filter((h) => `${h._source.path}`.startsWith(`${root}${path.sep}`));
+    return r.responses[0].hits.hits.filter((h) => !path.isAbsolute(`${h._source.path}`) || `${h._source.path}`.startsWith(`${root}${path.sep}`));
   });
 }
+
+// SearchAF's document vector index, as created on Cloud for a source without one.
+const DOCUMENT_VECTORS = {
+  name: "document_vectors",
+  type: "embeddings",
+  field: "semantic_content",
+  dimension: 512,
+  distance_metric: "cosine",
+  publication_policy: "progressive",
+  embedder: { provider: "antfly", model: "antflydb/clipclap:gguf:Q4_K" },
+};
 
 // Fields that only make sense on the Mac that indexed the files.
 const LOCAL_ONLY = new Set([
@@ -168,14 +196,14 @@ async function publish() {
   const root = path.resolve(need("root"));
   const cloudBase = instance();
   const table = need("table");
-  const key = cloudKey();
+  const key = isLoopback(cloudBase) ? undefined : cloudKey();
   const cloud = `${cloudBase}/db/v1`;
   const { files, rows } = await localRows(root);
   if (rows.length === 0) fail(`SearchAF has not indexed anything under ${root}; add the folder in SearchAF and wait for it`);
 
   const inserts = {};
   for (const row of rows) {
-    const rel = path.relative(root, row.path);
+    const rel = relativePath(root, row.path);
     const doc = Object.fromEntries(Object.entries(row).filter(([k]) => !LOCAL_ONLY.has(k)));
     doc.path = rel;
     doc.directory = path.dirname(rel) === "." ? "" : path.dirname(rel);
@@ -189,6 +217,10 @@ async function publish() {
   for (const [name, index] of Object.entries(files.indexes)) {
     if (index.type === "embeddings") indexes[name] = index;
   }
+  // A Lite source has no vector index; Cloud gets the one SearchAF would have made.
+  if (!indexes.document_vectors) indexes.document_vectors = DOCUMENT_VECTORS;
+  // Building a Lite file: it has no embedder, so no vector indexes at all.
+  if (args["no-vectors"]) for (const name of Object.keys(indexes)) delete indexes[name];
   const { version: _version, ...schema } = files.schema;
 
   const existing = await call(cloud, "GET", "/tables", undefined, key);
@@ -208,22 +240,25 @@ async function publish() {
 async function check() {
   const cloudBase = instance();
   const table = need("table");
-  const key = cloudKey();
+  const key = isLoopback(cloudBase) ? undefined : cloudKey();
   const cloud = `${cloudBase}/db/v1`;
   const count = await call(cloud, "POST", `/tables/${table}/query`, {
     full_text_search: { match_all: {} },
     fields: ["filename"],
     limit: 1000,
   }, key);
-  console.log(`${table} holds ${count.responses[0].hits.hits.length} documents`);
+  const info = await call(cloud, "GET", `/tables/${table}`, undefined, key);
+  const vectors = "document_vectors" in (info.indexes ?? {});
+  console.log(`${table} holds ${count.responses[0].hits.hits.length} documents${vectors ? "" : " (keyword search only)"}`);
   await runChecks(need("checks"), async (query) => {
-    const r = await call(cloud, "POST", `/tables/${table}/query`, hybridQuery(query, 5), key);
+    const r = await call(cloud, "POST", `/tables/${table}/query`, hybridQuery(query, 5, vectors), key);
     if (r.responses[0].error) throw new Error(JSON.stringify(r.responses[0].error));
     return r.responses[0].hits.hits;
   });
 }
 
-// The app takes the engine without /db/v1 and adds it per request.
+// The app takes the engine without /db/v1 and adds it per request. With
+// --local, prints the engine you named (an `antfly lite serve` address).
 function local() {
   const base = localBase().replace(/\/db\/v1$/, "");
   console.log(`ANTFLY_API_BASE=${base}\nANTFLY_TABLE=files\nANTFLY_API_KEY=`);

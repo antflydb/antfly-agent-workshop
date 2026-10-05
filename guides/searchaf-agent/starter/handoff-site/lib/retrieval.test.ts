@@ -24,6 +24,7 @@ test('the local engine is queried without an Authorization header', async () => 
 test('Cloud requests run the hybrid query and turn rows into literal excerpts', async () => {
   const original = fetch;
   globalThis.fetch = async (url,init) => {
+    if (String(url).endsWith('/tables/'+config.table)) return Response.json({indexes:{full_text_index_v0:{},document_vectors:{}}});
     assert.equal(url,config.apiBase+'/db/v1/tables/'+config.table+'/query');
     assert.equal((init?.headers as Record<string,string>).Authorization,'ApiKey '+config.apiKey);
     const body = JSON.parse(String(init?.body));
@@ -93,4 +94,17 @@ test('malformed model responses are sanitized rather than exposing parser detail
       await assert.rejects(answerQuestion('question',config), error=>error instanceof Error && /invalid response|did not finish/.test(error.message) && !error.message.includes('private-provider-body'));
     }
   } finally {globalThis.fetch=original;}
+});
+test('a table without document vectors (Antfly Lite) is searched by keyword only', async () => {
+  const original = fetch;
+  const lite = {...config, apiBase:'http://127.0.0.1:8080', table:'files', apiKey:''};
+  globalThis.fetch = async (url,init) => {
+    if (String(url).endsWith('/tables/files')) return Response.json({indexes:{full_text_index_v0:{}}});
+    const body = JSON.parse(String(init?.body));
+    assert.equal(body.semantic_search, undefined); assert.equal(body.indexes, undefined); assert.equal(body.merge_config, undefined);
+    assert.ok(body.full_text_search.disjuncts.length > 0);
+    return hits();
+  };
+  try { assert.equal((await searchDocuments('pilot', lite)).length, 1); }
+  finally { globalThis.fetch = original; }
 });
