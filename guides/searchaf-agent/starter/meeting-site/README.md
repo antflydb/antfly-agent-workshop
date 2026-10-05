@@ -13,7 +13,7 @@ It does not create calendar events, send messages or store briefs.
 
 ## Connection
 
-Configure server-only `OPENAI_API_KEY`, `ANTFLY_CLOUD_API_BASE`, `ANTFLY_CLOUD_TABLE`, and `ANTFLY_CLOUD_API_KEY`, the same four values as the knowledge app (see `../.env.example` and `../../HANDOFF.md`).
+Configure server-only `OPENAI_API_KEY`, `ANTFLY_API_BASE`, `ANTFLY_TABLE`, and `ANTFLY_API_KEY`, the same four values as the knowledge app (see `../.env.example` and `../../HANDOFF.md`).
 
 
 Local preview reads `WORKSHOP_ENV_FILE` (default `../.env.local`); deployment uses server runtime secrets. Never commit credentials or expose them through browser environment variables. Keep the Site owner-only: a shared corpus key does not provide per-viewer source authorization.

@@ -1,14 +1,14 @@
 # Antfly Agent Workshop
 
-Build a support agent over a folder of documents in an hour: SearchAF extracts the documents on your Mac, the extracted text moves to an Antfly Cloud table, and a small app answers questions from that table with citations. The same table then serves two more apps.
+Build a support agent over a folder of documents in an hour. SearchAF extracts the documents on your Mac and runs an Antfly engine there; a small app answers questions from it with citations. Then the documents are published to Antfly Cloud and the app is deployed to ChatGPT Sites, and the same app works with your Mac shut.
 
-- [HANDOFF.md](guides/searchaf-agent/HANDOFF.md): the steps, for you or the coding agent you hand them to.
+- [HANDOFF.md](guides/searchaf-agent/HANDOFF.md): the two prompts you give a coding agent, and what it does for each.
 - [CORPUS.md](guides/searchaf-agent/CORPUS.md): the seven sample documents and what each check proves.
-- [starter/](guides/searchaf-agent/starter/): the three apps.
-- [tools/promote.mjs](tools/promote.mjs): moves what SearchAF indexed into a Cloud table and runs the checks.
+- [starter/](guides/searchaf-agent/starter/): the support agent and two more apps over the same documents.
+- [tools/promote.mjs](tools/promote.mjs): finds the local engine, publishes what SearchAF indexed to a Cloud table, and runs the checks.
 
-To hand the whole thing to an agent:
+Before the first prompt: install [SearchAF](https://searchaf.com) and add this repository's `guides/searchaf-agent/sample-data` folder during its setup; create an Antfly Cloud account, an instance, and an instance key; have an OpenAI API key and Node 22 or newer.
 
-> Read guides/searchaf-agent/HANDOFF.md and follow it. Stop where it says to stop and ask me for the instance URL and key.
+> Build the support agent from guides/searchaf-agent/HANDOFF.md and run it locally. My OpenAI API key is in ~/.antfly-workshop-openai-key.
 
-You need a Mac with SearchAF, an OpenAI API key, Node 22 or newer, and an Antfly Cloud account, which you create partway through.
+> Deploy everything to the cloud. My instance URL is <url> and the instance key is in ~/.antfly-workshop-key.
