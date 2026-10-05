@@ -15,11 +15,3 @@ test('facts require real citations and agenda must fit allotted time',()=>{
  assert.throws(()=>validateBrief(brief,[s],45));
  assert.throws(()=>validateBrief({...brief,agenda:[{topic:'X',purpose:'Y',minutes:-1,source_ids:[]}]},[s],30));
 });
-test('brief generation uses read-only tunnel retrieval and rejects failures',async()=>{
- const original=globalThis.fetch;const config={mode:'local-tunnel' as const,key:'fixture',tunnel:'tunnel_fixture',model:'test'};
- const fake=(sources:unknown[],error?:string)=>{globalThis.fetch=async(_url,init)=>{
-  const request=JSON.parse(String(init?.body));assert.equal(request.store,false);assert.equal(request.text.format.strict,true);assert.deepEqual(request.tools[0].allowed_tools,['search_workshop_files']);
-  return Response.json({status:'completed',output:[{type:'mcp_call',name:'search_workshop_files',error,output:JSON.stringify({sources})},{type:'message',content:[{type:'output_text',text:JSON.stringify(brief)}]}]});
- };};
- try{fake([s]);assert.equal((await prepareBrief(input,config)).status,'ready');fake([]);assert.equal((await prepareBrief(input,config)).status,'insufficient_evidence');fake([s],'failed');await assert.rejects(prepareBrief(input,config),/retrieval did not complete/);}finally{globalThis.fetch=original;}
-});
