@@ -1,3 +1,4 @@
+import { env } from 'cloudflare:workers';
 import { getChatGPTUser } from '@/app/chatgpt-auth';
 import { answerQuestion, configurationFromEnv } from '@/lib/answer';
 
@@ -13,7 +14,7 @@ export async function POST(request: Request) {
   try { body = JSON.parse(raw); } catch { return Response.json({ error: 'Invalid request.' }, { status: 400 }); }
   if (typeof body.question !== 'string' || !body.question.trim() || body.question.length > 2000) return Response.json({ error: 'Enter a question between 1 and 2,000 characters.' }, { status: 400 });
   let config;
-  try { config = configurationFromEnv(process.env); }
+  try { config = configurationFromEnv(env as Record<string, string | undefined>); }
   catch { return Response.json({ error: 'The private connection is still being configured.' }, { status: 503 }); }
   try {
     const answer = await answerQuestion(body.question.trim(), config);

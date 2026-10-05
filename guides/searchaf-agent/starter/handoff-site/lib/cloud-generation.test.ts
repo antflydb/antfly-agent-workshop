@@ -3,16 +3,15 @@ import assert from 'node:assert/strict';
 import {prepareHandoff} from './brief.ts';
 import type {AnswerConfig} from './answer.ts';
 test('Cloud generation executes bounded retrieval and preserves structured output and evidence', async()=>{
- const config:AnswerConfig={mode:'cloud',key:'openai-fixture',model:'test-model',apiBase:'https://platform.antfly.io/cloud/v1/00000000-0000-0000-0000-000000000000',table:'atlas_workshop_fixture',corpusVersion:'atlas-0123456789abcdef',cloudKey:'cloud-fixture'};
+ const config:AnswerConfig={key:'openai-fixture',model:'test-model',apiBase:'https://platform.antfly.io/cloud/v1/00000000-0000-0000-0000-000000000000',table:'atlas_workshop',cloudKey:'cloud-fixture'};
  const original=globalThis.fetch;let calls=0;let schema='';
  globalThis.fetch=async(url,init)=>{
   const request=JSON.parse(String(init?.body));
   if(String(url).includes('platform.antfly.io')){
-   assert.equal(new Headers(init?.headers).get('Authorization'),'Bearer cloud-fixture');
-   assert.equal(request.filter_query.term,config.corpusVersion);
-   assert.equal(request.filter_query.field,'corpus_version.keyword');
+   assert.equal(new Headers(init?.headers).get('Authorization'),'ApiKey cloud-fixture');
+   assert.equal(request.merge_config.strategy,'rrf');
    assert.equal(request.limit,6);
-   return Response.json({responses:[{hits:{hits:[{_id:'doc-fixture',_source:{filename:'approved.md',content:'Approved launch date.',source_format:'Markdown',source_relative_path:'approved.md',corpus_version:config.corpusVersion}}]}}]});
+   return Response.json({responses:[{hits:{hits:[{_id:'approved.md',_source:{filename:'approved.md',content:'Approved launch date.'}}]}}]});
   }
   assert.equal(new Headers(init?.headers).get('Authorization'),'Bearer openai-fixture');
   assert.equal(request.store,false);assert.equal(request.text.format.type,'json_schema');

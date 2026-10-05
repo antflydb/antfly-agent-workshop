@@ -2,34 +2,36 @@ import test from 'node:test';
 import assert from 'node:assert/strict';
 import { configurationFromEnv, answerQuestion, runEvidenceResponse } from './answer.ts';
 import { searchCloud } from './cloud.ts';
-const config = {mode:'cloud' as const, key:'openai-fixture-secret', model:'test-model', apiBase:'https://platform.antfly.io/cloud/v1/11111111-1111-1111-1111-111111111111', table:'atlas_workshop_fixture', corpusVersion:'atlas-0123456789abcdef', cloudKey:'cloud-fixture-secret'};
-const row = {filename:'atlas-approved-plan.md', content:'Pilot launches October 15 for 25 customers.', corpus_version:config.corpusVersion, source_format:'Markdown', source_relative_path:'atlas-approved-plan.md'};
-const hits = (source:unknown=row) => Response.json({responses:[{hits:{hits:[{_id:'atlas-fixture',_source:source}]}}]});
-test('configuration defaults to Cloud; local requires explicit opt in', () => {
-  const env = {OPENAI_API_KEY:config.key, ANTFLY_CLOUD_API_BASE:config.apiBase, ANTFLY_CLOUD_TABLE:config.table, ANTFLY_CORPUS_VERSION:config.corpusVersion, ANTFLY_CLOUD_API_KEY:config.cloudKey};
+const config = {key:'openai-fixture-secret', model:'test-model', apiBase:'https://platform.antfly.io/cloud/v1/11111111-1111-1111-1111-111111111111', table:'atlas_workshop', cloudKey:'cloud-fixture-secret'};
+const row = {filename:'atlas-approved-plan.md', content:'Pilot launches October 15 for 25 customers.'};
+const hits = (source:unknown=row) => Response.json({responses:[{hits:{hits:[{_id:'atlas-approved-plan.md',_source:source}]}}]});
+test('configuration needs the OpenAI key, the instance, the table and the Antfly key', () => {
+  const env = {OPENAI_API_KEY:config.key, ANTFLY_CLOUD_API_BASE:config.apiBase, ANTFLY_CLOUD_TABLE:config.table, ANTFLY_CLOUD_API_KEY:config.cloudKey};
   assert.deepEqual(configurationFromEnv(env), {...config,model:'gpt-6-astra'});
-  assert.throws(()=>configurationFromEnv({OPENAI_API_KEY:'fixture',ANTFLY_TUNNEL_ID:'legacy'}), /Configure the Cloud/);
-  assert.equal(configurationFromEnv({OPENAI_API_KEY:'fixture',ANTFLY_RETRIEVAL_MODE:'local-tunnel',ANTFLY_TUNNEL_ID:'legacy'}).mode,'local-tunnel');
+  assert.throws(()=>configurationFromEnv({OPENAI_API_KEY:'fixture'}), /Configure the Cloud/);
   assert.throws(()=>configurationFromEnv({...env,ANTFLY_CLOUD_API_BASE:'https://untrusted.example'}), /Configure the Cloud/);
+  assert.throws(()=>configurationFromEnv({...env,ANTFLY_CLOUD_TABLE:'../other'}), /Configure the Cloud/);
 });
-test('Cloud hybrid requests constrain table, version, fields and evidence provenance', async () => {
+test('Cloud requests run the hybrid query and turn rows into literal excerpts', async () => {
   const original = fetch;
   globalThis.fetch = async (url,init) => {
     assert.equal(url,config.apiBase+'/db/v1/tables/'+config.table+'/query');
-    assert.equal((init?.headers as Record<string,string>).Authorization,'Bearer '+config.cloudKey);
+    assert.equal((init?.headers as Record<string,string>).Authorization,'ApiKey '+config.cloudKey);
     const body = JSON.parse(String(init?.body));
     assert.equal(body.limit,6); assert.deepEqual(body.indexes,['document_vectors']);
-    assert.deepEqual(body.filter_query,{term:config.corpusVersion,field:'corpus_version.keyword'});
-    assert.deepEqual(body.fields,['filename','content','corpus_version','source_format','source_relative_path']);
-    assert.deepEqual(body.hierarchy,{}); assert.equal(body.semantic_search,'pilot'); assert.equal(body.full_text_search.match,'pilot');
+    assert.deepEqual(body.merge_config,{strategy:'rrf',rank_constant:60});
+    assert.deepEqual(body.fields,['filename','content']); assert.equal(body.semantic_search,'pilot');
+    assert.ok(body.full_text_search.disjuncts.some((d:{match?:string;field:string})=>d.match==='pilot'&&d.field==='content'));
     return hits();
   };
   try {
     const first = await searchCloud('pilot',config), second = await searchCloud('pilot',config);
-    assert.deepEqual(first,second); assert.equal(first[0].excerpt,row.content); assert.match(first[0].id,/^S[a-f0-9]{12}$/);
-    for (const bad of [{...row,corpus_version:'other'},{...row,private_path:'/private'},{...row,content:null}]) {
+    assert.deepEqual(first,second); assert.equal(first[0].excerpt,row.content); assert.equal(first[0].title,row.filename); assert.match(first[0].id,/^S[a-f0-9]{12}$/);
+    globalThis.fetch = async ()=>hits({...row,content:''});
+    assert.deepEqual(await searchCloud('pilot',config),[]);
+    for (const bad of [{...row,filename:null},{...row,filename:'x'.repeat(251)}]) {
       globalThis.fetch = async ()=>hits(bad);
-      await assert.rejects(searchCloud('pilot',config),/outside the configured corpus/);
+      await assert.rejects(searchCloud('pilot',config),/unexpected row/);
     }
     globalThis.fetch = async ()=>Response.json({responses:[{error:'failure',hits:{hits:[]}}]});
     await assert.rejects(searchCloud('pilot',config),/did not complete/);
