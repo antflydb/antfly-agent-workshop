@@ -1,3 +1,4 @@
+import { env } from 'cloudflare:workers';
 import { configurationFromEnv } from '@/lib/answer';
 import { getChatGPTUser } from '@/app/chatgpt-auth';
 import { parseMeetingInput, prepareBrief } from '@/lib/brief';
@@ -9,7 +10,7 @@ export async function POST(request:Request){
  const raw=await request.text();if(raw.length>7000)return Response.json({error:'Meeting details are too long.'},{status:413,headers});
  let meeting;try{meeting=parseMeetingInput(JSON.parse(raw));}catch{return Response.json({error:'Enter a topic, participants, goal, and a valid duration.'},{status:400,headers});}
  let config;
- try{config=configurationFromEnv(process.env);}catch{return Response.json({error:'The private Antfly connection needs configuration.'},{status:503,headers});}
+ try{config=configurationFromEnv(env as Record<string, string | undefined>);}catch{return Response.json({error:'The private Antfly connection needs configuration.'},{status:503,headers});}
  try{return Response.json(await prepareBrief(meeting,config),{headers});}
  catch(error){return Response.json({error:error instanceof Error&&error.name!=='TimeoutError'?error.message:'Preparation timed out. Check the Antfly connection, then try a narrower topic.'},{status:502,headers});}
 }

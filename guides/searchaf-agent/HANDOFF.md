@@ -53,6 +53,7 @@ One `.env.local` at the working-copy root serves all three apps; each app reads 
 ```sh
 cp <repo>/guides/searchaf-agent/starter/.env.example .env.local
 # fill in OPENAI_API_KEY, ANTFLY_CLOUD_API_BASE, ANTFLY_CLOUD_TABLE=atlas_workshop, ANTFLY_CLOUD_API_KEY
+# (the key's value, not the path of the file that holds it)
 cd site && npm ci && npm test && npm run typecheck && npm run build
 node smoke-answer.mjs --question "When is the Project Atlas pilot launch, and for how many customers?" --expect "October 15"
 npm run dev
@@ -65,11 +66,11 @@ Ask two questions and check the citations:
 - "When is the Project Atlas pilot launch, and for how many customers?" Expect October 15, 2026 and 25 invited customers, cited to `atlas-approved-plan.md`, not the draft.
 - "What should support tell a customer who sees ATLAS-403?" Expect sign out, then sign in, cited to the PDF.
 
-Then ask something the files do not cover. The app must say the files do not provide enough evidence rather than guess. The retrieval path is `lib/cloud.ts`: one hybrid query (keyword and vector, fused by RRF), and every excerpt the model sees is a literal slice of a returned row.
+Then ask "What does the Atlas pilot cost per seat?" The files say nothing about pricing, so the app must say they do not provide enough evidence rather than guess. The retrieval path is `lib/cloud.ts`: one hybrid query (keyword and vector, fused by RRF), and every excerpt the model sees is a literal slice of a returned row.
 
 ## 5. Deploy
 
-Deploy `site` as a private ChatGPT Site with the same four variables set server-side, and make the two requests above from another device. Quit SearchAF first: the deployed app must not depend on the Mac.
+Deploy `site` as a private ChatGPT Site named `atlas-support`, with the same four variables set as the Site's server-side secrets. On Sites those arrive as Worker bindings, which is why the API routes read `env` from `cloudflare:workers` rather than `process.env`. Quit SearchAF, then ask the step 4 questions against the deployed URL; if the page looks stale after a redeploy, hard refresh. The deployed app must not depend on the Mac.
 
 ## 6. The other apps
 
